@@ -196,14 +196,58 @@ folds <- c(folds1, folds2, basemod_folder)
 fromdir <- basemod_folder
 todir <- "model/base_model_2026_hindcast/"
 
+# nretros <- 5
+# npreds <- 5
+
 #Need to re do this
 make_hindcast_files(fromdir = fromdir, todir = todir,
                     nretros = 5, npreds = 5)
 
+ncores <- 12
+
+hinds <- list.files(todir)
+hinds <- hinds[hinds != 'orig']
+hinds <- paste0(todir, "/",hinds, "/")
+
+####Run models in parallel
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
+
+start_time <- Sys.time()
+results <- foreach(ii = 1:length(hinds), .packages = c("r4ss")) %dopar% {
+  ##Run the model
+  # R0dir <- paste0(dir_prof, "/R0_", ii)
+  setwd(hinds[ii])
+  # system("'../../../ss3.30.24_linux/ss3' -nohess -maxI 0")
+  system("'../../../ss3.30.24_linux/ss3' -nohess")
+  setwd(orig_dir)
+}
+
+stopCluster(cl)
+run_time <- Sys.time() - start_time; run_time
 
 
+#--Pull the F10 CPUE values out
+hind_res <- ssoutput_parallel(ncores = 10,  fold = hinds)
+cpues <- lapply(hind_res, FUN = function(xx) {
+  temp <- xx$cpue %>% filter(Fleet == 10)
+  return(temp)
+  }
+)
 
+names(cpues) <- names(hind_res)
+cpues <- cpues %>% ldply
+names(cpues)[1] <- 'model'
+cpues$npred <- cpu
 
+cc <- strsplit(cpues$model, split = "//") %>% ldply() %>% pull(V2)
+cc <- gsub("/", "", cc)
+cc1 <- strsplit(cc, split = "_") %>% ldply() %>% 
+  mutate(npred = substr(V1, 5, 5), 
+         retro = substr(V2, 6, 6)) %>% select(npred, retro)
+cpues <- cbind(cpues, cc1)
+
+write.csv(cc1, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
 
 
 #Old Code#-------------------------
