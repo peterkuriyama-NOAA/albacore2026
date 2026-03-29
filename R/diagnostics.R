@@ -26,18 +26,11 @@ library(hmsassessment)
 # base_model_2026, which is from 
 # "model/day5base_scen4_F25fixed/"
 # 
-# <<<<<<< HEAD
-# basemod_folder <- "model/base_model_2026/"
-# basemod <- SS_output(basemod_folder)
 # 
-# #-------------------------------------------------------------------------------
-# =======
-# basemod_folder <- "model/base_mod_2026/"
-# basemod <- SS_output(basemod_folder)
-# #Corrected from S36 sel to be 75 and 95; check this on subsequent model copies
-# >>>>>>> 3204613b1f5b8770038911be905125c5bd256842
+basemod_folder <- "model/base_model_2026/"
+basemod <- SS_output(basemod_folder)
 
-#-------------------------------------------------------------------------------
+# #-------------------------------------------------------------------------------
 ##Model convergence (jittering)-------------------------------------------------
 
 #Jitters
