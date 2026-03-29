@@ -7,22 +7,29 @@ setwd(orig_dir)
 
 source("Rcode/alb_header.R")
 
+#Things to check: S36 selex pars in control file
+#75 
+#95
 
 #-------Add in assessment packages
-remotes::install_github("r4ss/r4ss")
+# remotes::install_github("r4ss/r4ss")
 library(r4ss)
 
-devtools::install_github("peterkuriyama/cpsassessment")
+# devtools::install_github("peterkuriyama/cpsassessment")
 library(cpsassessment)
 
-devtools::install_github("peterkuriyama-NOAA/hmsassessment")
+# devtools::install_github("peterkuriyama-NOAA/hmsassessment")
+library(hmsassessment)
 
 #Add permissions to run ss command line if necessary
 # system(" chmod +x 'ss3.30.24_linux/ss3'  ")
 
 #-------------------------------------------------------------------------------
-#Base model
-basemod_folder <- "model/day"
+#Base model; waiting for Hessian to run on 
+# base_model_2026, which is from 
+# "model/day5base_scen4_F25fixed/"
+
+basemod_folder <- "model/day/"
 basemod <- SS_output()
 #-------------------------------------------------------------------------------
 
@@ -38,7 +45,7 @@ copy_files(fromdir = fromdir , todir = todir,
            overwrite = T, files = list.files(fromdir))
 file.copy(from = "ss3.30.24_linux/ss3", to = paste0(todir, "ss3"))
 
-
+#Specify number of 
 ncores <- 10
 numjitter <- 10
 
@@ -53,12 +60,17 @@ future::plan(future::sequential)
 
 
 ##ASPM and ASPMR----------------------------------------------------------------
+fromdir <- "model/day5base_scen4_F25_fixed_best/" 
+#Before modifying S36 sel to be 75 and 95 to match assumptions about spatiotemporal modeling
 
+todir <- "model/base_model_2026_aspm/" 
+hmsassessment::make_aspm(fromdir = fromdir, todir = todir, overwrite = T)
 
+todir <- 'model/base_model_2026_aspmr/'
+hmsassessment::make_aspmr(fromdir = fromdir, todir = todir, overwrite = T)
 
 ##R0 profiles-------------------------------------------------------------------
 #Specify base model
-
 
 dir_prof <- "model/day4base_mixedsel_R0profile/"
 copy_SS_inputs(dir.old= 'model/day4base_mixedsel/', dir.new = dir_prof,
@@ -310,12 +322,6 @@ for(ii in 1:length(checkfolds)){
 rbind(grads, grads2)
 
 rbind(grads, grads2) %>% filter(grad < 1e-3) %>% arrange(R0)
-
-
-
-
-
-
 
 
 
