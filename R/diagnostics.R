@@ -92,8 +92,8 @@ hmsassessment::make_aspmr(fromdir = fromdir, todir = todir, overwrite = T)
 ##R0 profiles-------------------------------------------------------------------
 #Specify base model
 
-dir_prof <- "model/day4base_mixedsel_R0profile/"
-copy_SS_inputs(dir.old= 'model/day4base_mixedsel/', dir.new = dir_prof,
+dir_prof <- "model/base_model_2026_R0profile/"
+copy_SS_inputs(dir.old= 'model/base_model_2026/', dir.new = dir_prof,
                create.dir = T, overwrite = T, copy_par = T,
                verbose = T)
 
@@ -125,63 +125,109 @@ prof.table <- profile(
   profilevec = R0.vec,
   extras = "-nohess"
 )
-
-
-
-
-#--------------------------------------------------------------------
-#R0 profiles
-
-dir_prof <- "model/base_model_2026_R0profile/"
-copy_SS_inputs(dir.old= 'model/base_model_2026/', dir.new = dir_prof,
-               create.dir = T, overwrite = T, copy_par = T,
-               verbose = T)
-
-#Copy SS version
-system(paste0("cp ss3.30.24_linux/ss3", " ", dir_prof))
-
-starter <- SS_readstarter(file.path(dir_prof, "starter.ss"))
-# change control file name in the starter file
-starter[["ctlfile"]] <- "control_modified.ss"
-# for non-estimated quantities
-starter[["prior_like"]] <- 1
-# write modified starter file
-SS_writestarter(starter, dir = dir_prof, overwrite = TRUE)
-
-# vector of values to profile over
-R0.vec <- seq(11, 13, by = .1)
-
-Nprofile <- length(R0.vec)
-
-#Run models in parallel
-ncores <- 10
-
-future::plan(future::multisession, workers = ncores)
-prof.table <- profile(
-  dir = dir_prof,
-  oldctlfile = "control.ss",
-  newctlfile = "control_modified.ss",
-  string = "R0", # subset of parameter label
-  profilevec = R0.vec,
-  extras = "-nohess"
-)
-
-
 #-------------------------------------------------------
-#Code to re run models that didn't converge
-
-R0.vec <- seq(11, 13, by = .2)
-length(R0.vec)
+#Check gradients of some model runs
 paste0(dir_prof, "Report", 1:length(R0.vec), ".sso")
 
-grads <- data.frame(R0 = R0.vec, grad = 999)
+grads <- data.frame(R0 = R0.vec, grad = 999, nll = 999)
 
 for(ii in 1:length(R0.vec)){
   temp <- readLines(paste0(dir_prof, "/Report", ii, ".sso"), n = 20)
-
   grads[ii, 'grad'] <- as.numeric(strsplit(temp[15] , split = " ")[[1]][2])
+  grads[ii, 'nll'] <- as.numeric(strsplit(temp[19] , split = " ")[[1]][2])
 }
 grads
+
+ggplot(grads,aes(x = R0, y = nll)) + geom_line() + geom_point()
+
+
+#-------------------------------------------------------
+#Try another way of running the profile, moving out from the base model
+dir_prof <- "model/base_model_2026_R0_profile_MLEout/"
+copy_SS_inputs(dir.old= 'model/base_model_2026/', dir.new = dir_prof,
+               create.dir = T, overwrite = T, copy_par = T,
+               verbose = T)
+file.copy(from = "ss3.30.24_linux/ss3", to = paste0(dir_prof, "ss3"))
+
+#Modify base starter file in dir_prof
+starter <- SS_readstarter(paste0(dir_prof, "/starter.ss"))
+starter$run_display_detail <- 0
+SS_writestarter(mylist = starter, file = paste0(dir_prof, "/starter.ss"),
+                overwrite = T)
+
+for(ii in 1:length(R0.vec)){
+  
+  R0dir <- paste0(dir_prof, "/R0_", ii)
+  copy_SS_inputs( dir.old = dir_prof, dir.new = R0dir,
+                  create.dir = T, overwrite = T, copy_par = T, verbose = F)
+  #Change R0 value in par file  
+  tempdat <- SS_readdat(paste0(R0dir, "/data.ss"))
+  tempctl <- SS_readctl(datlist = tempdat, 
+                        paste0(R0dir, "/control.ss"))
+  temppar <- SS_readpar_3.30(paste0(R0dir, "/ss3.par"), datsource = tempdat,
+                  ctlsource = tempctl)
+  
+  #Modify settings
+  tempR <- tempctl$SR_parms 
+  tempR[grep("R0", row.names(tempR)), 'INIT'] <- R0.vec[ii]
+  tempR[grep("R0", row.names(tempR)), 'PHASE'] <- 
+    tempR[grep("R0", row.names(tempR)), 'PHASE'] * -1
+  tempctl$SR_parms <- tempR
+  #WRite new control file
+  SS_writectl(ctllist = tempctl, outfile =paste0(R0dir, "/control.ss"), overwrite = T)
+  
+  #Change par file
+  temppar <- readLines(paste0(R0dir, "/ss3.par"))
+  temppar[grep("SRparm\\[1", temppar) + 1] <- as.character(R0.vec[ii])
+  writeLines(text = temppar, con = paste0(R0dir, "/ss3.par"))  
+}
+
+
+###Run the models in parallel
+# ncores <- length(folds)
+ncores <- 12
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
+
+start_time <- Sys.time()
+results <- foreach(ii = 1:length(R0.vec), .packages = c("r4ss")) %dopar% {
+  ##Run the model
+  R0dir <- paste0(dir_prof, "/R0_", ii)
+  setwd(R0dir)
+  # system("../ss3 -nohess -maxI 0")
+  system("../ss3 -nohess")
+  setwd(orig_dir)
+}
+
+stopCluster(cl)
+run_time <- Sys.time() - start_time; run_time
+
+
+folds <- paste0(dir_prof, "R0_", 1:length(R0.vec))
+res <- ssoutput_parallel(ncores = 10, folders = folds)
+summs <- SSsummarize(res)
+
+summs$likelihoods %>% filter(Label == "TOTAL") %>% melt %>% 
+  mutate(minval = min(value), delta = value - minval, R0 = R0.vec)  %>%
+  ggplot(aes(x = R0, y = delta)) + geom_line() + geom_point() + 
+  geom_hline(aes(yintercept = 1.92), lty = 2) 
+  
+
+summs$pars %>% slice(grep("R0", Label))
+
+
+
+list.files(dir_prof)
+
+
+
+12.1 and 12.2
+
+
+
+
+basemod$parameters %>% slice(grep("R0", Label)) %>% select(1:10)
+
 
 
 #-------------------------
