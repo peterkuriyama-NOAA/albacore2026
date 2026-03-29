@@ -34,8 +34,8 @@ basemod <- SS_output(basemod_folder)
 ##Model convergence (jittering)-------------------------------------------------
 
 #Jitters
-fromdir <- "model/day5base_scen4_F25fixed/"
-todir <- "model/day5base_scen4_F25fixed_jitter_50/"
+fromdir <- "model/base_model_2026/"
+todir <- "model/base_model_2026_yellow_jitter20/"
 dir.create(todir)
 
 # flz <- list.files(fromdir)
@@ -45,7 +45,7 @@ file.copy(from = "ss3.30.24_linux/ss3", to = paste0(todir, "ss3"))
 
 #Specify number of 
 ncores <- 10
-numjitter <- 10
+numjitter <- 20
 
 
 future::plan(future::multisession, workers = ncores)
