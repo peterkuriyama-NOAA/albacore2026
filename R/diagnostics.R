@@ -37,7 +37,7 @@ basemod <- SS_output()
 
 #Jitters
 fromdir <- "model/day5base_scen4_F25fixed/"
-todir <- "model/day5base_scen4_F25fixed_jitter/"
+todir <- "model/day5base_scen4_F25fixed_jitter_50/"
 dir.create(todir)
 
 # flz <- list.files(fromdir)
@@ -70,10 +70,10 @@ jit.likes <- lapply(folds, FUN = function(xx){
   return(like)
 })
 unlist(jit.likes)
-likes1 <- data.frame(iter = 1:50, likes = unlist(jit.likes),
+likes2 <- data.frame(iter = 1:50, likes = unlist(jit.likes),
                      model = todir,
-                     workstation = 'yellow')
-write.csv(likes1, file = "../albacore2026/output/likes1.csv", row.names = F)
+                     workstation = 'blue')
+write.csv(likes2, file = "../albacore2026/output/likes2.csv", row.names = F)
 
 
 ##ASPM and ASPMR----------------------------------------------------------------
