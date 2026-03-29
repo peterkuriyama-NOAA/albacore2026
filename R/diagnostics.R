@@ -29,8 +29,9 @@ library(hmsassessment)
 # base_model_2026, which is from 
 # "model/day5base_scen4_F25fixed/"
 
-basemod_folder <- "model/day/"
-basemod <- SS_output()
+basemod_folder <- "model/base_model_2026/"
+basemod <- SS_output(basemod_folder)
+
 #-------------------------------------------------------------------------------
 
 ##Model convergence (jittering)-------------------------------------------------
@@ -126,15 +127,11 @@ prof.table <- profile(
 
 
 
-
-
-
-
 #--------------------------------------------------------------------
 #R0 profiles
 
-dir_prof <- "model/day4base_mixedsel_R0profile/"
-copy_SS_inputs(dir.old= 'model/day4base_mixedsel/', dir.new = dir_prof,
+dir_prof <- "model/base_model_2026_R0profile/"
+copy_SS_inputs(dir.old= 'model/base_model_2026/', dir.new = dir_prof,
                create.dir = T, overwrite = T, copy_par = T,
                verbose = T)
 
@@ -150,12 +147,12 @@ starter[["prior_like"]] <- 1
 SS_writestarter(starter, dir = dir_prof, overwrite = TRUE)
 
 # vector of values to profile over
-R0.vec <- seq(11, 13, by = .2)
+R0.vec <- seq(11, 13, by = .1)
 
 Nprofile <- length(R0.vec)
 
 #Run models in parallel
-ncores <- Nprofile
+ncores <- 10
 
 future::plan(future::multisession, workers = ncores)
 prof.table <- profile(
