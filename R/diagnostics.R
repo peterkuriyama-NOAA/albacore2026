@@ -90,9 +90,6 @@ todir <- 'model/base_model_2026_aspmr/'
 hmsassessment::make_aspmr(fromdir = fromdir, todir = todir, overwrite = T)
 
 ##R0 profiles-------------------------------------------------------------------
-#Specify base model
-
-#-------------------------------------------------------
 #Try another way of running the profile, moving out from the base model
 R0.vec1 <- seq(11, 13, .2)
 R0.vec2 <- seq(11, 13, .1)
@@ -160,8 +157,7 @@ results <- foreach(ii = 1:length(R0.vec), .packages = c("r4ss")) %dopar% {
 stopCluster(cl)
 run_time <- Sys.time() - start_time; run_time
 
-#---------------------------
-#Compile all R0 results
+#Compile all R0 results#---------------------------
 
 #Combine folders to compile
 folds1 <- paste0("model/base_model_2026_R0_profile_MLEout")
@@ -198,7 +194,7 @@ folds <- c(folds1, folds2, basemod_folder)
 
 ##Retrospective Analysis---------------------------------
 fromdir <- basemod_folder
-todir <- "model/base_model_2026_hindcast"
+todir <- "model/base_model_2026_hindcast/"
 
 #Need to re do this
 make_hindcast_files(fromdir = fromdir, todir = todir,
