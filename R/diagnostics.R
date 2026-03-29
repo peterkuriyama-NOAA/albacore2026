@@ -58,6 +58,23 @@ jit.likes <- r4ss::jitter(
 )
 future::plan(future::sequential)
 
+#--Save jitter runs and records; will need to modify some numbers as 
+#necessary
+flz <- list.files(todir)
+folds <- paste0(todir, "Report", 1:50, ".sso")
+
+jit.likes <- lapply(folds, FUN = function(xx){
+  temp <- readLines(xx, n = 20)
+  like <- plyr::ldply(strsplit(temp[19], split = ": "))  %>% pull(V2) %>%
+    as.numeric
+  return(like)
+})
+unlist(jit.likes)
+likes1 <- data.frame(iter = 1:50, likes = unlist(jit.likes),
+                     model = todir,
+                     workstation = 'yellow')
+write.csv(likes1, file = "../albacore2026/output/likes1.csv", row.names = F)
+
 
 ##ASPM and ASPMR----------------------------------------------------------------
 fromdir <- "model/day5base_scen4_F25_fixed_best/" 
