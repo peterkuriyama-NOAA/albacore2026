@@ -174,34 +174,21 @@ folds2 <- paste0(folds2, "/",f2val)
 folds <- c(folds1, folds2, basemod_folder)
 
 #----------------Read in results
-res <- ssoutput_parallel(ncores = 10, folders = folds)
-summs <- SSsummarize(res)
-
-R0s <- summs$pars %>% slice(grep("R0", Label)) %>%melt(id.var = c("Label", "Yr", "recdev")) %>%
-  select(variable, value) %>% rename(R0val = "value")
-
-likes <- summs$likelihoods %>% filter(Label == "TOTAL") %>% melt %>% 
-  mutate(minval = min(value), delta = value - minval) 
-likes <- likes %>% left_join(R0s, by = 'variable')
-
-likes %>%
-  ggplot(aes(x = R0val, y = delta)) + geom_line() + geom_point() + 
-  geom_hline(aes(yintercept = 1.92), lty = 2)  +  
-  geom_vline(aes(xintercept = 12.1204), lty = 2)
+# res <- ssoutput_parallel(ncores = 10, folders = folds)
+# summs <- SSsummarize(res)
+# 
+# R0s <- summs$pars %>% slice(grep("R0", Label)) %>%melt(id.var = c("Label", "Yr", "recdev")) %>%
+#   select(variable, value) %>% rename(R0val = "value")
+# 
+# likes <- summs$likelihoods %>% filter(Label == "TOTAL") %>% melt %>% 
+#   mutate(minval = min(value), delta = value - minval) 
+# likes <- likes %>% left_join(R0s, by = 'variable')
+# 
+# likes %>%
+#   ggplot(aes(x = R0val, y = delta)) + geom_line() + geom_point() + 
+#   geom_hline(aes(yintercept = 1.92), lty = 2)  +  
+#   geom_vline(aes(xintercept = 12.1204), lty = 2)
   
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
