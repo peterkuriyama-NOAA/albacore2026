@@ -7,9 +7,6 @@ setwd(orig_dir)
 
 source("Rcode/alb_header.R")
 
-#Things to check: S36 selex pars in control file
-#75 
-#95
 
 #-------Add in assessment packages
 # remotes::install_github("r4ss/r4ss")
@@ -28,12 +25,19 @@ library(hmsassessment)
 #Base model; waiting for Hessian to run on 
 # base_model_2026, which is from 
 # "model/day5base_scen4_F25fixed/"
-
-basemod_folder <- "model/base_model_2026/"
-basemod <- SS_output(basemod_folder)
+# 
+# <<<<<<< HEAD
+# basemod_folder <- "model/base_model_2026/"
+# basemod <- SS_output(basemod_folder)
+# 
+# #-------------------------------------------------------------------------------
+# =======
+# basemod_folder <- "model/base_mod_2026/"
+# basemod <- SS_output(basemod_folder)
+# #Corrected from S36 sel to be 75 and 95; check this on subsequent model copies
+# >>>>>>> 3204613b1f5b8770038911be905125c5bd256842
 
 #-------------------------------------------------------------------------------
-
 ##Model convergence (jittering)-------------------------------------------------
 
 #Jitters
@@ -75,6 +79,11 @@ likes2 <- data.frame(iter = 1:50, likes = unlist(jit.likes),
                      model = todir,
                      workstation = 'blue')
 write.csv(likes2, file = "../albacore2026/output/likes2.csv", row.names = F)
+
+#Compile all the jitter likelihoods
+likes1 <- read.csv("../albacore2026/output/likes1.csv")
+likes2 <- read.csv("../albacore2026/output/likes2.csv")
+rbind(likes1, likes2) %>% pull(likes) %>% table
 
 
 ##ASPM and ASPMR----------------------------------------------------------------
