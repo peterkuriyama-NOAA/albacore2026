@@ -345,3 +345,11 @@ rbind(grads, grads2) %>% filter(grad < 1e-3) %>% arrange(R0)
 ##Residual Analysis---------------------------------
 
 ##Retrospective Analysis---------------------------------
+fromdir <- basemod_folder
+todir <- "model/base_model_2026_hindcast"
+
+#Need to re do this
+make_hindcast_files(fromdir = fromdir, todir = todir,
+                    nretros = 5, npreds = 5)
+
+
