@@ -24,7 +24,15 @@
 # 
 # system("gcsfuse frd_popdy_peter '$HOME/bucket'")
 
+#
+
 #------------------------------------------------------------------------
+#Create bucket directory 
+# setwd("/home/user/")
+mkdir '$HOME/bucket'
+gcsfuse frd_popdy_peter "$HOME/bucket"
+
+
 #Start of file copying
 library(foreach)
 library(doParallel)
@@ -43,7 +51,7 @@ files_to_upload <- files_to_upload[which(files_to_upload != "base_model_2026")]
 #Also only keep folders that have mod or day in the name
 files_to_upload <- files_to_upload[grep("day|mod", files_to_upload)]
 
-files_to_upload <- files_to_upload[-grep("\\.ss|\\.par", files_to_upload)]
+# files_to_upload <- files_to_upload[-grep("\\.ss|\\.par", files_to_upload)]
 
 
 
