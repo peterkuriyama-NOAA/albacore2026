@@ -229,6 +229,7 @@ run_time <- Sys.time() - start_time; run_time
 
 #--Pull the F10 CPUE values out
 hind_res <- ssoutput_parallel(ncores = 10,  fold = hinds)
+
 cpues <- lapply(hind_res, FUN = function(xx) {
   temp <- xx$cpue %>% filter(Fleet == 10)
   return(temp)
@@ -238,7 +239,7 @@ cpues <- lapply(hind_res, FUN = function(xx) {
 names(cpues) <- names(hind_res)
 cpues <- cpues %>% ldply
 names(cpues)[1] <- 'model'
-cpues$npred <- cpu
+
 
 cc <- strsplit(cpues$model, split = "//") %>% ldply() %>% pull(V2)
 cc <- gsub("/", "", cc)
@@ -247,7 +248,7 @@ cc1 <- strsplit(cc, split = "_") %>% ldply() %>%
          retro = substr(V2, 6, 6)) %>% select(npred, retro)
 cpues <- cbind(cpues, cc1)
 
-write.csv(cc1, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
+write.csv(cpues, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
 
 
 #Old Code#-------------------------
