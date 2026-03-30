@@ -38,8 +38,8 @@ library(foreach)
 library(doParallel)
 
 #Specify directories to add
-bucketdir <- "/home/user/bucket/albacore/model"
-workstationdir <- "/home/user/2026_albacore/model"
+bucketdir <- "/home/user/bucket/albacore/model/"
+workstationdir <- "/home/user/2026_albacore/model/"
   
 bucket_files <- list.files(bucketdir)
 workstation_files <- list.files(workstationdir)
@@ -66,8 +66,8 @@ registerDoParallel(cl)
 start_time <- Sys.time()
 
 foreach(ii = 1:length(files_to_upload)) %dopar% {
-  fromdir <- paste0(workstationdir, "/",files_to_upload[ii])
-  todir <- paste0(bucketdir, "/", files_to_upload[ii])
+  fromdir <- paste0(workstationdir, "/",files_to_upload[ii], "/")
+  todir <- paste0(bucketdir, "/", files_to_upload[ii], "/")
   
   dir.create(todir, recursive = T)
   
