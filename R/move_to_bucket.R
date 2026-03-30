@@ -29,8 +29,8 @@
 #------------------------------------------------------------------------
 #Create bucket directory 
 # setwd("/home/user/")
-mkdir '$HOME/bucket'
-gcsfuse frd_popdy_peter "$HOME/bucket"
+# mkdir '$HOME/bucket'
+# gcsfuse frd_popdy_peter "$HOME/bucket"
 
 
 #Start of file copying
