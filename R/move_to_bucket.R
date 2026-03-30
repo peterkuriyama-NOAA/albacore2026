@@ -79,4 +79,38 @@ stopCluster(cl)
 run_time <- Sys.time() - start_time; run_time
 
 
+#------------------------------------------------
+#Clean up the bucket filestructure because I messed up the backslash at the end of the
+#directories
+
+#List of all the bucket files
+bucketfiles <- list.files(bucketdir)
+
+ii <- 1
+
+#Move everything up if the directory has the same name
+# for(ii in 1:length(bucketfiles)){
+  
+  # bucketdirfiles <- list.files(paste0(bucketdir, "/", bucketfiles[ii]))
+  
+  # paste0(bucketdir, bucketfiles[ii], "/", bucketfiles[ii], "/")
+sum(bucketfiles[ii] == list.files(paste0(bucketdir, bucketfiles[ii]))) > 0
+  
+ii <- 7
+if(sum(bucketfiles[ii] == list.files(paste0(bucketdir, bucketfiles[ii]))) > 0){
+    fromdir <- paste0(bucketdir, bucketfiles[ii], "/", bucketfiles[ii], "/")
+    todir <-   paste0(bucketdir, bucketfiles[ii], "/" )
+    mv_command <- paste0("mv ", fromdir, "* ", todir, "")
+    system(mv_command)
+    #Delete the folder
+    rm_command <- paste0("rmdir ", fromdir)
+    system(rm_command)  
+  
+  }
+# } 
+
+
+
+
+
 
