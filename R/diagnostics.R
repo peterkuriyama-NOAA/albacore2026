@@ -187,10 +187,10 @@ folds <- c(folds1, folds2, basemod_folder)
   
 
 
-
-
-
 ##Residual Analysis---------------------------------
+
+
+
 
 ##Retrospective Analysis---------------------------------
 fromdir <- basemod_folder
@@ -206,7 +206,7 @@ make_hindcast_files(fromdir = fromdir, todir = todir,
 ncores <- 12
 
 hinds <- list.files(todir)
-hinds <- hinds[hinds != 'orig']
+hinds <- hinds[hinds != 'orig' & hinds != 'desktop.ini']
 hinds <- paste0(todir, "/",hinds, "/")
 
 ####Run models in parallel
@@ -226,29 +226,157 @@ results <- foreach(ii = 1:length(hinds), .packages = c("r4ss")) %dopar% {
 stopCluster(cl)
 run_time <- Sys.time() - start_time; run_time
 
+#Steve's function to calculate MASE---------------------------------------------
+ssreps2mase <- function(x, fleet, horizon=NULL, details=F, naive.all=F) {
+  if (is.null(fleet)) { stop('Missing fleet ID.') }
+  nmod <- length(x)
+  out <- data.frame(model=1:nmod,  startyr=NA, retroyr=NA, termyr=NA, predyr=NA, 
+                    horizon=NA, predobs=NA, predexp=NA) 
+  for (ii in 1:nmod) {
+    cpue <- NULL
+    cpue <- x[[ii]]$cpue[ x[[ii]]$cpue$Fleet == fleet, ]
+    if (is.null(cpue)) { stop('Check output from SSgetoutput. Cannot match fleets.') }
+    out$startyr[ii] <- min( cpue$Yr[ cpue$Use == 1 ] )
+    out$retroyr[ii] <- x[[ii]]$Retro_year
+    out$termyr[ii] <- max(cpue$Yr[ cpue$Use == 1 ] )
+    
+    # browser()
+    if ( is.null(horizon) ) {
+      out$predyr[ii] <- out$retroyr[ii]
+      out$horizon[ii] <- out$predyr[ii] - out$termyr[ii]
+    } else {
+      out$predyr[ii] <- out$termyr[ii] + horizon
+      out$horizon[ii] <- horizon
+    }
+    out$predobs[ii] <- cpue$Obs[ cpue$Yr == out$predyr[ii] ]
+    out$predexp[ii] <- cpue$Exp[ cpue$Yr == out$predyr[ii] ]
+  }
+  out$absprederr <- abs( out$predexp - out$predobs )
+  mintermyr <- min(out$termyr)
+  maxtermyr <- max(out$termyr)
+  minretroyr <- min(out$retroyr)
+  maxretroyr <- max(out$retroyr)
+  
+  startyr <- out$startyr[1]
+  horizon2 <- out$horizon[1]
+  if ( sum(out$startyr != startyr) > 0 ) { stop('Check models! Index has inconsistent start years.')	}
+  if ( sum(out$horizon != horizon2) > 0 ) { stop('Check models! Horizon has inconsistent number of years.')	}
+  
+  if (naive.all) {
+    naiveobs <- cpue$Obs[ which(cpue$Yr==(startyr+out$horizon[1])):which(cpue$Yr==maxretroyr) ]
+    naiveexp <- cpue$Obs[ which(cpue$Yr==startyr):which(cpue$Yr==(maxretroyr-out$horizon[1])) ]
+  } else {	
+    naiveobs <- cpue$Obs[ which(cpue$Yr==mintermyr):which(cpue$Yr==maxretroyr) ]
+    naiveexp <- cpue$Obs[ which(cpue$Yr==(mintermyr-out$horizon[1])):which(cpue$Yr==(maxretroyr-out$horizon[1])) ]
+  }
+
+  meanabsnaiveprederr <- mean(abs(naiveexp - naiveobs))
+  out$meanabsnaiveprederr <- meanabsnaiveprederr
+  
+  mase <- data.frame( MASE=mean(out$absprederr)/meanabsnaiveprederr,
+                      nmodels=nmod,
+                      nretro=max(out$retroyr) - min(out$retroyr),
+                      horizon=out$horizon[1],
+                      meanabsprederr=mean(out$absprederr),
+                      meanabsnaiveprederr=meanabsnaiveprederr
+  )
+  
+  if (details) { 
+    print('Predictions:')
+    print(out$predexp)
+    print('Observations:') 
+    print(out$predobs)
+    print('Naive Predictions:')
+    print(naiveexp)
+    print('Naive Observations:') 
+    print(naiveobs)
+    print('MASE:')
+    print(mase)
+  }
+  return(mase)
+}
+
+ssreps2mafe <- function(x, fleet, details=F) {
+  if (is.null(fleet)) { stop('Missing fleet ID.') }
+  nmod <- length(x)
+  out <- data.frame(model=1:nmod,  startyr=NA, retroyr=NA, termyr=NA, absfiterr=NA) 
+  for (ii in 1:nmod) {
+    cpue <- NULL
+    cpue <- x[[ii]]$cpue[ x[[ii]]$cpue$Fleet == fleet, ]
+    if (is.null(cpue)) { stop('Check output from SSgetoutput. Cannot match fleets.') }
+    out$startyr[ii] <- min( cpue$Yr[ cpue$Use == 1 ] )
+    out$retroyr[ii] <- x[[ii]]$Retro_year
+    out$termyr[ii] <- max(cpue$Yr[ cpue$Use == 1 ] )
+    
+    obs <- cpue$Obs[ cpue$Use == 1 ]
+    exp <- cpue$Exp[ cpue$Use == 1 ]
+    out$absfiterr[ii] <- mean(abs(exp-obs))
+  } 
+  mafe <- mean(out$absfiterr)
+  
+  if (details) { 
+    print(out)
+  }
+  return(mafe)
+}
+
 
 #--Pull the F10 CPUE values out
-hind_res <- ssoutput_parallel(ncores = 10,  fold = hinds)
 
-cpues <- lapply(hind_res, FUN = function(xx) {
-  temp <- xx$cpue %>% filter(Fleet == 10)
-  return(temp)
-  }
-)
+hind_res <- ssoutput_parallel(ncores = 10,  fold = hinds)
+#takes 3 minutes
+
+# 
+# cpues <- lapply(hind_res, FUN = function(xx) {
+#   temp <- xx$cpue %>% filter(Fleet == 10)
+#   return(temp)
+#   }
+# )
 
 names(cpues) <- names(hind_res)
 cpues <- cpues %>% ldply
 names(cpues)[1] <- 'model'
 
 
-cc <- strsplit(cpues$model, split = "//") %>% ldply() %>% pull(V2)
-cc <- gsub("/", "", cc)
-cc1 <- strsplit(cc, split = "_") %>% ldply() %>% 
-  mutate(npred = substr(V1, 5, 5), 
-         retro = substr(V2, 6, 6)) %>% select(npred, retro)
-cpues <- cbind(cpues, cc1)
+##Group by preds 1:5
+mase.combo <- lapply(1:5, FUN = function(xx){
+  SSreps <- hind_res[grep(paste0("pred", xx), hinds)]
+  
+  mase <- ssreps2mase(SSreps, fleet=10, details=T, naive.all=F) # estimated mase
+  
+  meanabsfiterr <- ssreps2mafe(SSreps, fleet=10, details=T) #estimated fit error on same scale
+  mase2 <- cbind(mase, meanabsfiterr)
+  return(mase2)  
+})
 
-write.csv(cpues, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
+mase.combo <- ldply(mase.combo)
+write.csv(mase.combo, file = "../albacore2026/output/mase.csv", row.names = F)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #Old Code#-------------------------
@@ -458,3 +586,16 @@ write.csv(cpues, file = "../albacore2026/output/hindcast_F10.csv", row.names = F
 # 
 # 
 
+# 
+# 
+# 
+# 
+# cc <- strsplit(cpues$model, split = "//") %>% ldply() %>% pull(V2)
+# cc <- gsub("/", "", cc)
+# cc1 <- strsplit(cc, split = "_") %>% ldply() %>% 
+#   mutate(npred = substr(V1, 5, 5), 
+#          retro = substr(V2, 6, 6)) %>% select(npred, retro)
+# cpues <- cbind(cpues, cc1)
+# 
+# write.csv(cpues, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
+# 
