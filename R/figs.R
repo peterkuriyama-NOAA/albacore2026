@@ -10,7 +10,7 @@ library(r4ss)
 # devtools::install_github("peterkuriyama/cpsassessment")
 library(cpsassessment)
 
-# devtools::install_github("peterkuriyama-NOAA/hmsassessment")
+devtools::install_github("peterkuriyama-NOAA/hmsassessment")
 library(hmsassessment)
 
 # detach("package:hmsassessment", unload = TRUE)
@@ -27,7 +27,14 @@ basemod <- SS_output(basemod_folder)
 figfold <- "Y:/My Drive//assessments//albacore2026/figs/"
 
 #Historical analysis------------------------------------------------------------
+model2023 <- SS_output("model/previousbasemodels/00a_05_04_basecase_clean/")
 
+
+figfold <- "Y://My Drive//assessments//albacore2026//figs/historical/"
+dir.create(figfold, recursive = T)
+
+res <- list(base2026 = basemod, base2023 = model2023)
+plot_historical(res = res, figfolder = figfold, cpue_fleets = list(10, 12))
 
 ##Model convergence (jittering)-------------------------------------------------
 #Find the F values and Biomass associated with jitter MLE values
@@ -68,8 +75,56 @@ dir.create(R0_figfold)
 make_R0profile_plots(figfold = R0_figfold, res = R0res)
 
 
-##R0 profiles-------------------------------------------------------------------
+##Hindcast----------------------------------------------------------------------
+#
+hindcasts <- read.csv("../albacore2026/output/hindcast_F10.csv")
+names(hindcasts) <- tolower(names(hindcasts))
+hindcasts <- hindcasts %>% select(fleet, yr, obs, exp, use, npred, retro)
+
+#Start manipulating the hindcasts data
+lastyears <- hindcasts %>% filter(use != -1) %>% group_by(npred, retro) %>% 
+  summarize(last_obs_year = max(yr))
+hindcasts <- hindcasts %>% left_join(lastyears)
+hindcasts$pred <- hindcasts$exp
+
+hindcasts %>% filter(npred == 4, retro == 4)
 
 
+pred0 <- hindcasts %>% filter(yr == last_obs_year) %>% mutate(pred0 = pred) %>%
+  distinct(npred, retro, last_obs_year, pred0)
+  
+hindcasts <- hindcasts %>% left_join(pred0)
+hindcasts <- hindcasts %>% mutate(resid = obs - pred, resid0 = obs - pred0)
+hindcasts$horizon <- hindcasts$last_obs_year + hindcasts$npred
+
+
+hindcasts %>% filter(yr > last_obs_year, yr <= horizon) %>% 
+  group_by(npred) %>% summarize(mae = mean(abs(resid)),
+                                scale = mean(abs(resid0)),
+                                mase = mae / scale)
+
+
+#Check these, a horizon of 5 years
+hindcasts %>% filter(yr > last_obs_year, npred == 5,
+                     yr <= horizon)
+
+
+
+
+hindcasts %>% filter(npred == 1, retro == 0)
+
+hindcasts %>% filter(yr > last_obs_year) 
+
+
+
+hindcasts %>% group_by(npred, retro) %>%
+  
+  mutate(last_obs_yr =)
+  
+  filter(npred == 1)
+
+hindcasts %>% mutate(endyear = 2024, p)
+
+hindcasts %>% select(fleet, yr) %>% filter(npred == 1, retro == 1)
 
 

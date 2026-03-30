@@ -226,7 +226,7 @@ results <- foreach(ii = 1:length(hinds), .packages = c("r4ss")) %dopar% {
 stopCluster(cl)
 run_time <- Sys.time() - start_time; run_time
 
-#Steve's function to calculate MASE---------------------------------------------
+#Steve's function to calculate MASE
 ssreps2mase <- function(x, fleet, horizon=NULL, details=F, naive.all=F) {
   if (is.null(fleet)) { stop('Missing fleet ID.') }
   nmod <- length(x)
@@ -295,7 +295,6 @@ ssreps2mase <- function(x, fleet, horizon=NULL, details=F, naive.all=F) {
   }
   return(mase)
 }
-
 ssreps2mafe <- function(x, fleet, details=F) {
   if (is.null(fleet)) { stop('Missing fleet ID.') }
   nmod <- length(x)
@@ -321,8 +320,7 @@ ssreps2mafe <- function(x, fleet, details=F) {
 }
 
 
-#--Pull the F10 CPUE values out
-
+##-----Pull the F10 CPUE values out
 hind_res <- ssoutput_parallel(ncores = 10,  fold = hinds)
 #takes 3 minutes
 
@@ -351,6 +349,25 @@ mase.combo <- lapply(1:5, FUN = function(xx){
 
 mase.combo <- ldply(mase.combo)
 write.csv(mase.combo, file = "../albacore2026/output/mase.csv", row.names = F)
+
+
+####Catch-curve analysis---------------------
+fromdir <- basemod_folder
+todir <- "model/base_model_2026_catchcurve/"
+dir.create(todir)
+
+# flz <- list.files(fromdir)
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = list.files(fromdir))
+
+#Turn CPUE lambda off
+newdat <- SS_readdat(paste0(todir, "data.ss"))
+newctl <- SS_readctl(datlist = newdat, file = paste0(todir, "control.ss"))
+
+newctl$lambdas[which(newctl$lambdas$like_comp == 1 & newctl$lambdas$value == 1), 'value'] <- 0
+file.copy(from = paste0(todir, "control.ss"), to = paste0(todir, "control_old.ss"))
+SS_writectl(ctllist = newctl, outfile = paste0(todir, "control.ss"), 
+            overwrite = T)
 
 
 

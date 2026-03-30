@@ -1,0 +1,15 @@
+"Label","variable","value","minval","delta"
+"Length_comp","base2026",1212.18,824.037,388.143
+"Length_comp","base2023",824.037,824.037,0
+"Survey","base2026",-26.134,-26.943,0.809
+"Survey","base2023",-26.943,-26.943,0
+"TOTAL","base2026",1646.18,785.702,860.478
+"TOTAL","base2023",785.702,785.702,0
+"InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","base2023",NA,NA,NA
+"InitF_seas_1_flt_28F28_TWLL_A35","base2026",NA,NA,NA
+"InitF_seas_1_flt_28F28_TWLL_A35","base2023",1.621,NA,NA
+"SR_LN(R0)","base2026",12.12,NA,NA
+"SR_LN(R0)","base2023",12.292,NA,NA
+"SR_regime_BLK1add_1993","base2026",0.043,NA,NA
+"SR_regime_BLK1add_1993","base2023",0.05,NA,NA
