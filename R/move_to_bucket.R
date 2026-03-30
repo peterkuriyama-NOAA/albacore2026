@@ -50,23 +50,25 @@ files_to_upload <- files_to_upload[-grep("\\.ss|\\.par", files_to_upload)]
 # files_to_upload_dirs <- paste0(bucketdir, "/", files_to_upload)
 
 #Upload the files in parallel
-# ncores <- 10
-# 
-# 
-# cl <- makeCluster(ncores)
-# registerDoParallel(cl)
+ncores <- 10
 
-ii <- 1
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
 
+start_time <- Sys.time()
 
-fromdir <- paste0(workstationdir, "/",files_to_upload[ii])
-todir <- paste0(bucketdir, "/", files_to_upload[ii])
-
-dir.create(todir, recursive = T)
-
-mv_command <- paste0("mv ", fromdir, "* ", todir, '')
-system(mv_command)
+foreach(ii = 1:length(files_to_upload)) %dopar% {
+  fromdir <- paste0(workstationdir, "/",files_to_upload[ii])
+  todir <- paste0(bucketdir, "/", files_to_upload[ii])
   
+  dir.create(todir, recursive = T)
+  
+  mv_command <- paste0("mv ", fromdir, "* ", todir, '')
+  system(mv_command)  
+}
+stopCluster(cl)
+  
+run_time <- Sys.time() - start_time; run_time
 
 
 
