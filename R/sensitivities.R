@@ -30,6 +30,7 @@ library(hmsassessment)
 # 
 basemod_folder <- "model/base_model_2026/"
 # basemod <- SS_output(basemod_folder)
+fromdir <- basemod_folder
 
 #-------------------------------------------------------------------------------
 #Catch curve is code is at end of diagnostics script
@@ -179,18 +180,102 @@ ctl1$first_recent_yr_nobias_adj <- bb$df[4, 'value']
 ctl1$max_bias_adj <- bb$df[5, 'value']
 SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
 
-
-
 ##--------- 2b. Adding prior based on Brodziak et al. (2011).
+#Estimate natural mortality with Lorenzen M
+#Steepness prior has sd=0.05 and M prior
+todir <- "model/sens2b_hprior/"
+dir.create(todir)
+
+fromdir1 <- "model/sens1c_estM/"
+
+flz <- c("control.ss_new", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+copy_files(fromdir = fromdir1 , todir = todir,
+           overwrite = T, files = flz)
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$init_values_src <- 0
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+
+ctllist$SR_parms[2, "PR_SD"] <-  .05
+ctllist$SR_parms[2, "PR_type"] <-  6
+ctllist$SR_parms[2, "PHASE"] <-  4
+
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 # ==========================================================================
 # 3. Growth:
 #    a. CV of Linf is fixed higher (0.06 or 0.08) than base case; and
-#    b. Estimating growth.
+todir <- "model/sens3a_cv6/"
+dir.create(todir)
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+
+ctllist$MG_parms
+
+prow <- which(row.names(ctllist$MG_parms) %in% c("CV_old_Fem_GP_1"))
+ctllist$MG_parms[prow, "INIT"] <- .06
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
+#----value of 0.08
+todir <- "model/sens3a_cv8/"
+dir.create(todir)
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+
+prow <- which(row.names(ctllist$MG_parms) %in% c("CV_old_Fem_GP_1"))
+ctllist$MG_parms[prow, "INIT"] <- .08
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+#-----------    b. Estimating growth; turn on age comps for available data
+todir <- "model/sens3b_estgrowth/"
+dir.create(todir)
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+
+#Modify control file manually
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+#Turned on the three non CV growth parameters to positive phases in control file
+#TUrned on age lambdas for any fleet with CAAL data
 
 # ==========================================================================
-# 4. Size composition weighting:
+# 4. Size composition weighting: (run on a different workstation)
 #    a. Down weighting each individual fleet; and
+todir <- "model/sens2a_h85/"
+dir.create(todir)
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = list.files(fromdir))
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+ctllist$SR_parms[2, "INIT"] <- .85
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
 #    b. Down weighting all fleets so the input sample size is maximum 50 (currently 150).
 
 # ==========================================================================
