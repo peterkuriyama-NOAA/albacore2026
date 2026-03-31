@@ -35,26 +35,87 @@ basemod <- SS_output(basemod_folder)
 
 #Jitters
 fromdir <- "model/base_model_2026/"
-todir <- "model/base_model_2026_yellow_jitter20/"
+todir <- "model/base_model_2026_jitter_phase5R0/"
 dir.create(todir)
 
+original_dir <- paste0(todir, "/orig/")
+dir.create(original_dir)
+
 # flz <- list.files(fromdir)
-copy_files(fromdir = fromdir , todir = todir,
+copy_files(fromdir = fromdir , todir = original_dir,
            overwrite = T, files = list.files(fromdir))
 file.copy(from = "ss3.30.24_linux/ss3", to = paste0(todir, "ss3"))
 
-#Specify number of 
+#njits 
+njits <- 60
+set.seed(300)
+R0starts <- runif(n= njits, min = 11, max = 13)
+R0starts <- round(R0starts, digits = 2)
+
+#Copy the files over
+for(ii in 1:length(R0starts)){
+  
+  tempdir <- paste0(todir, "R0_", R0starts[ii], "/")
+  
+  if(length(list.files(tempdir)) > 0) next
+  
+  dir.create(tempdir)
+  copy_files(fromdir = original_dir , todir = tempdir,
+             overwrite = T, files = list.files(original_dir))
+  start <- SS_readstarter(file = paste0(tempdir, 'starter.ss'))
+  start$ctlfile <- "control_modified.ss"
+  start$jitter_fraction <- 0.1
+  SS_writestarter(mylist = start, file = paste0(tempdir, "starter.ss"), overwrite = T)
+  datlist <- SS_readdat(paste0(tempdir, "data.ss"))
+  ctllist <- SS_readctl(datlist = datlist, file = paste0(tempdir, "control.ss"))
+  ctllist$SR_parms[1, "INIT"] <- R0starts[ii]
+  ctllist$SR_parms[1, "PHASE"] <- R0starts[ii]
+  SS_writectl(ctllist = ctllist, outfile = paste0(tempdir, "control_modified.ss"),
+              overwrite = T)
+
+  parfile <- readLines(paste0(tempdir, "ss3.par"))  
+
+  parfile[grep("SRparm\\[1", parfile)  + 1] <- as.character(R0starts[ii])
+  writeLines(parfile, con = paste0(tempdir, "ss3.par"))
+}
+
+#---------------------Run the models in parallel
+
+ff <- list.files("model/base_model_2026_jitter_phase5R0/")
+ff <- ff[ff != "orig"]
+
 ncores <- 10
-numjitter <- 20
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
 
+start_time <- Sys.time()
+results <- foreach(ii = 1:length(ff), .packages = c("r4ss")) %dopar% {
+  ##Run the model
+  R0dir <- paste0(todir, ff[ii])
+  setwd(R0dir)
+  # system("../ss3 -nohess -maxI 0")
+  
+  system("'../../../ss3.30.24_linux/ss3' -nohess -nox")
+  setwd(orig_dir)
+}
 
-future::plan(future::multisession, workers = ncores)
-jit.likes <- r4ss::jitter(
-  dir = todir, Njitter = numjitter,
-  jitter_fraction = 0.1, init_values_src = 1,
-  exe = "ss3", extras = "-nohess"
-)
-future::plan(future::sequential)
+stopCluster(cl)
+run_time <- Sys.time() - start_time; run_time
+
+#Started at 5:24pm
+# 
+# #Specify number of 
+# ncores <- 10
+# numjitter <- 20
+# 
+# 
+# future::plan(future::multisession, workers = ncores)
+# jit.likes <- r4ss::jitter(
+#   dir = todir, Njitter = numjitter,
+#   jitter_fraction = 0.1, init_values_src = 1,
+#   exe = "ss3", extras = "-nohess"
+# )
+# future::plan(future::sequential)
 
 #--Save jitter runs and records; will need to modify some numbers as 
 #necessary
