@@ -84,6 +84,15 @@ for(ii in 1:length(R0starts)){
 ff <- list.files("model/base_model_2026_jitter_phase5R0/")
 ff <- ff[ff != "orig"]
 
+flz <- list.files("model/base_model_2026_jitter_phase5R0/")
+folds <- paste0("model/base_model_2026_jitter_phase5R0/", flz)
+
+
+folds <-folds[ grep("31 00", file.info(paste0(folds, "/Report.sso"))$mtime)]
+ff <- folds[folds != "model/base_model_2026_jitter_phase5R0/orig"]
+
+
+
 ncores <- 10
 cl <- makeCluster(ncores)
 registerDoParallel(cl)
@@ -91,7 +100,8 @@ registerDoParallel(cl)
 start_time <- Sys.time()
 results <- foreach(ii = 1:length(ff), .packages = c("r4ss")) %dopar% {
   ##Run the model
-  R0dir <- paste0(todir, ff[ii])
+  # R0dir <- paste0(todir, ff[ii])
+  R0dir <- ff[ii]
   setwd(R0dir)
   # system("../ss3 -nohess -maxI 0")
   
