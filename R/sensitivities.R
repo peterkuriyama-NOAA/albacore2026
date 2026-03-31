@@ -23,6 +23,28 @@ library(hmsassessment)
 
 ###Run these with Hessian and no windows output
 
+
+#------Template for modifying sensitivities
+todir <- "model/sens5b_2daroff/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+#------End of template
+
+
 #-------------------------------------------------------------------------------
 #Base model; waiting for Hessian to run on 
 # base_model_2026, which is from 
@@ -411,7 +433,7 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 # ==========================================================================
 # 5. Selectivity:
-#    a. Different sigmas UP (up/down 0.25);
+#------5a.Different sigmas UP (up/down 0.25);
 todir <- "model/sens5a_up/"
 dir.create(todir)
 
@@ -431,9 +453,7 @@ ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT + .25
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
-
-#    a. Different sigmas DOWN 0.25);
-
+##------5a. Different sigmas DOWN 0.25);
 todir <- "model/sens5a_down/"
 dir.create(todir)
 
@@ -455,10 +475,31 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 
 
-#    b. Turn off 2DARs;
+##------5b. Turn off 2DARs;
+todir <- "model/sens5b_2daroff/"
+dir.create(todir)
+
+flz <- c("control.ss_new", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+
+ctllist$Use_2D_AR1_selectivity <- 0
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 
-todir <- "model/sens4b_sampsizedown/"
+
+##------5c. No age selectivities;
+todir <- "model/sens5c_noage/"
 dir.create(todir)
 
 flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
@@ -473,17 +514,88 @@ SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = 
 datlist <- SS_readdat(paste0(todir, "data.ss"))
 ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 
-###Change things here
+
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
-#    c. No age selectivities;
-#    d. Not assuming that the US longline fishery in Area 2 and 4 has a descending 
+#Change control file manually, turn starter to 0
+
+
+###------5d. Not assuming that the US longline fishery in Area 2 and 4 has a descending 
 #       limb in asymptotic size selectivity.
 
 # ==========================================================================
 # 6. Index standardization models:
-#    a. S36 for adults all area include ASPM/ASPMR;
-#    b. TWNLL JUV S37 in addition to F10 include ASPM/ASPMR; and
-#    c. GLM Juvenile: Area 3/5 & Quarter 3/4 (EPO) in addition to F10.
+####------6a. S36 for adults all area include ASPM/ASPMR;
+todir <- "model/sens6a_S36/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+ctllist$lambdas[which(ctllist$lambdas$like_comp == 1 &
+                        ctllist$lambdas$fleet == 10  ), 'value'] <- 0
+ctllist$lambdas[which(ctllist$lambdas$like_comp == 1 &
+                        ctllist$lambdas$fleet == 36  ), 'value'] <- 1
+ctllist$lambdas %>% filter(like_comp == 1)
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+####------6b. TWNLL JUV S37 in addition to F10 include ASPM/ASPMR; and
+todir <- "model/sens6b_S37/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+ctllist$lambdas[which(ctllist$lambdas$like_comp == 1 &
+                        ctllist$lambdas$fleet == 37  ), 'value'] <- 1
+
+ctllist$lambdas %>% filter(like_comp == 1)
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
+###------6c. GLM Juvenile: Area 3/5 & Quarter 3/4 (EPO) in addition to F10.
+todir <- "model/sens6c_S34/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = F, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+ctllist$lambdas[which(ctllist$lambdas$like_comp == 1 &
+                        ctllist$lambdas$fleet == 34  ), 'value'] <- 1
+
+ctllist$lambdas %>% filter(like_comp == 1)
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 # ==========================================================================
 # 7. Initial conditions:
