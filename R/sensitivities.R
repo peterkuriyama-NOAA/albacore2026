@@ -1,5 +1,6 @@
 #-------------------------------------------------------------------------------
 #Sensitivities
+#CHECK ####TODO TODO###
 #-------------------------------------------------------------------------------
 #Starting on workstations
 orig_dir <- "/home/user/2026_albacore"
@@ -31,7 +32,8 @@ library(hmsassessment)
 basemod_folder <- "model/base_model_2026/"
 # basemod <- SS_output(basemod_folder)
 fromdir <- basemod_folder
-
+flz <- c("control_modified.ss", "data.ss", "starter.ss", "ss3.par", "forecast.ss",
+         "control.ss")
 #-------------------------------------------------------------------------------
 #Catch curve is code is at end of diagnostics script
 
@@ -48,7 +50,7 @@ todir <- "model/sens1a_M3/"
 dir.create(todir)
 
 copy_files(fromdir = fromdir , todir = todir,
-           overwrite = T, files = list.files(fromdir))
+           overwrite = T, files = flz)
 start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
 start$ctlfile <- "control_modified.ss"
 SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
@@ -58,12 +60,25 @@ ctllist$natM[1, ] <- 0.3
 ctllist$natM[2, ] <- 0.3
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
+#Tune the model
+todir_tuned <- "model/sens1a_M3_tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = todir , todir = todir_tuned,
+           overwrite = F, files = flz)
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
+
+
 #---------1b. Constant M of 0.48 and 0.39 for female and male of all ages, respectively; and
 todir <- "model/sens1b_consM/"
 dir.create(todir)
 
 copy_files(fromdir = fromdir , todir = todir,
-           overwrite = T, files = list.files(fromdir))
+           overwrite = T, files = flz)
 start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
 start$ctlfile <- "control_modified.ss"
 SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
@@ -74,6 +89,18 @@ ctllist$natM[2, ] <- 0.39
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 
+#Tune the model
+todir <- "model/sens1b_consM/"
+todir_tuned <- "model/sens1b_consM_tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = todir , todir = todir_tuned,
+           overwrite = F, files = flz)
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
 
 
 #--------- 1c. Estimated M with Lorenzen based on prior from Kinney and Teo (2017).
@@ -81,13 +108,14 @@ todir <- "model/sens1c_estM/"
 dir.create(todir)
 
 copy_files(fromdir = fromdir , todir = todir,
-           overwrite = T, files = list.files(fromdir))
+           overwrite = F, files = flz)
 start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
 start$ctlfile <- "control_modified.ss"
 SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
 datlist <- SS_readdat(paste0(todir, "data.ss"))
 ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 
+####TODO TODO###
 
 
 # ==========================================================================
@@ -169,7 +197,7 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #Adjust recdevs
 sens2a85 <- SS_output("model/sens2a_h85/")
 
-bb <- SS_fitbiasramp(sens2a85)
+bb <- SS_fitbiasramp(sens2a85, plot = F)
 dat1 <- SS_readdat(paste0(todir, "data.ss"))
 ctl1 <- SS_readctl(datlist = datlist, file = paste0(todir, "control_modified.ss"))
 
@@ -205,6 +233,18 @@ ctllist$SR_parms[2, "PHASE"] <-  4
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
+####TODO TODO###
+####Tune recdevs
+tunedir <- "model/sens2b_hprior_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens2b_hprior/" , todir = tunedir,
+            overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens2b_hprior/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"))
+
+
+
 # ==========================================================================
 # 3. Growth:
 #    a. CV of Linf is fixed higher (0.06 or 0.08) than base case; and
@@ -225,6 +265,17 @@ prow <- which(row.names(ctllist$MG_parms) %in% c("CV_old_Fem_GP_1"))
 ctllist$MG_parms[prow, "INIT"] <- .06
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
+####Tune recdevs
+tunedir <- "model/sens3a_cv6_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens3a_cv6/" , todir = tunedir,
+           overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens3a_cv6/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"))
+
+
+
 
 #----value of 0.08
 todir <- "model/sens3a_cv8/"
@@ -241,6 +292,15 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
 prow <- which(row.names(ctllist$MG_parms) %in% c("CV_old_Fem_GP_1"))
 ctllist$MG_parms[prow, "INIT"] <- .08
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+#Tune recdevs
+tunedir <- "model/sens3a_cv8_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens3a_cv8/" , todir = tunedir,
+           overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens3a_cv8/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
 #-----------    b. Estimating growth; turn on age comps for available data
 todir <- "model/sens3b_estgrowth/"
@@ -259,6 +319,16 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #Turned on the three non CV growth parameters to positive phases in control file
 #TUrned on age lambdas for any fleet with CAAL data
+
+#Tune recdevs
+tunedir <- "model/sens3b_estgrowth_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens3b_estgrowth/" , todir = tunedir,
+           overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
+
 
 # ==========================================================================
 # 4. Size composition weighting: (run on a different workstation)
