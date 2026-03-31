@@ -87,10 +87,10 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 todir_tuned <- "model/sens1a_M3_tuned/"
 dir.create(todir_tuned)
 
-copy_files(fromdir = "model/sens1a_M3/", todir = todir_tuned,
+copy_files(fromdir = todir , todir = todir_tuned,
            overwrite = F, files = flz)
 
-newctl <- do_biasadj(tempdir = "model/sens1a_M3/", ctlname = "control_modified.ss")
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
 
 
@@ -365,12 +365,6 @@ copy_files(fromdir = "model/sens3b_estgrowth/" , todir = tunedir,
 newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
-growthmod <- SS_output("model/sens3b_estgrowth/")
-growthmod$maximum_gradient_component
-
-####TODO TODO####
-# bb <- SS_fitbiasramp(growthmod, plot = F)
-# growthmod$breakpoints_for_bias_adjustment_ramp
 
 # ==========================================================================
 # 4. Size composition weighting: (run on a different workstation)
@@ -479,7 +473,7 @@ dir.create(tunedir)
 
 copy_files(fromdir = "model/sens5a_up/" , todir = tunedir,
            overwrite = F, files = flz)
-newctl <- do_biasadj(tempdir = "model/sens5a_up/", ctlname = "control_modified.ss")
+newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
 
@@ -612,6 +606,18 @@ ctllist$lambdas %>% filter(like_comp == 1)
 ###Change things here
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
+
+#Tune Rec Devs
+todir_tuned <- "model/sens6a_S36_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens6a_S36/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens6a_S36/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
 ####------6b. TWNLL JUV S37 in addition to F10 include ASPM/ASPMR; and
 todir <- "model/sens6b_S37/"
 dir.create(todir)
@@ -637,6 +643,19 @@ ctllist$lambdas %>% filter(like_comp == 1)
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 
+#Tune Rec Devs
+todir_tuned <- "model/sens6b_S37_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens6b_S37/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens6b_S37/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
+
+
 ###------6c. GLM Juvenile: Area 3/5 & Quarter 3/4 (EPO) in addition to F10.
 todir <- "model/sens6c_S34/"
 dir.create(todir)
@@ -660,6 +679,19 @@ ctllist$lambdas %>% filter(like_comp == 1)
 
 ###Change things here
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
+
+#Tune Rec Devs
+todir_tuned <- "model/sens6c_S34_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens6c_S34/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens6c_S34/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
 
 # ==========================================================================
 # 7. Initial conditions:
