@@ -139,6 +139,15 @@ datlist <- SS_readdat(paste0(todir, "data.ss"))
 ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 
 ####TODO TODO###
+todir <- "model/sens1c_estM/"
+todir_tuned <- "model/sens1c_estM_tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = todir , todir = todir_tuned,
+           overwrite = F, files = flz)
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
 
 
 # ==========================================================================
@@ -256,16 +265,20 @@ ctllist$SR_parms[2, "PHASE"] <-  4
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
-####TODO TODO###
+####No convergence?###
 ####Tune recdevs
-tunedir <- "model/sens2b_hprior_tuned/"
-dir.create(tunedir)
-
-copy_files(fromdir = "model/sens2b_hprior/" , todir = tunedir,
-            overwrite = F, files = flz)
-newctl <- do_biasadj(tempdir = "model/sens2b_hprior/", ctlname = "control_modified.ss")
-SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"))
-
+tempmod <- SS_output("model/sens2b_hprior")
+tempmod$maximum_gradient_component
+tempmod$parameters %>% slice(grep("NatM|R0|steep", Label))
+# 
+# tunedir <- "model/sens2b_hprior_tuned/"
+# dir.create(tunedir)
+# 
+# copy_files(fromdir = "model/sens2b_hprior/" , todir = tunedir,
+#             overwrite = F, files = flz)
+# newctl <- do_biasadj(tempdir = "model/sens2b_hprior/", ctlname = "control_modified.ss")
+# SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"))
+# 
 
 
 # ==========================================================================
@@ -454,6 +467,17 @@ ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT + .25
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
+#---Tune Rec Devs
+tunedir <- "model/sens5a_up_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens5a_up/" , todir = tunedir,
+           overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
+
+
+
 ##------5a. Different sigmas DOWN 0.25);
 todir <- "model/sens5a_down/"
 dir.create(todir)
@@ -473,6 +497,16 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT - .25
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+#Tune Rec Devs
+tunedir <- "model/sens5a_down_tuned/"
+dir.create(tunedir)
+
+copy_files(fromdir = "model/sens5a_down/" , todir = tunedir,
+           overwrite = F, files = flz)
+newctl <- do_biasadj(tempdir = "model/sens5a_down/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
+
 
 
 
