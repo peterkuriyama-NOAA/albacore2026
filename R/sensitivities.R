@@ -387,12 +387,94 @@ stopCluster(cl)
 run_time <- Sys.time() - start_time; run_time
 
 
-#    b. Down weighting all fleets so the input sample size is maximum 50 (currently 150).
+##-----------b. Down weighting all fleets so the input sample size is maximum 50 (currently 150).
+todir <- "model/sens4b_sampsizedown/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+ctllist$Variance_adjustment_list[which(ctllist$Variance_adjustment_list$factor == 4), 'value'] <-
+  50 / (150 / .2752)
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
 
 # ==========================================================================
 # 5. Selectivity:
-#    a. Different sigmas (up/down 0.25);
+#    a. Different sigmas UP (up/down 0.25);
+todir <- "model/sens5a_up/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = F, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT + .25
+
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
+#    a. Different sigmas DOWN 0.25);
+
+todir <- "model/sens5a_down/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = F, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT - .25
+
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+
+
 #    b. Turn off 2DARs;
+
+
+todir <- "model/sens4b_sampsizedown/"
+dir.create(todir)
+
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+copy_files(fromdir = fromdir , todir = todir,
+           overwrite = T, files = flz)
+
+start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
+start$ctlfile <- "control_modified.ss"
+SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
+datlist <- SS_readdat(paste0(todir, "data.ss"))
+ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
+
+###Change things here
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #    c. No age selectivities;
 #    d. Not assuming that the US longline fishery in Area 2 and 4 has a descending 
 #       limb in asymptotic size selectivity.
