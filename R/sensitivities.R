@@ -1,6 +1,7 @@
 #-------------------------------------------------------------------------------
 #Sensitivities
 #CHECK ####TODO TODO###
+#Note No HESSIAN runs also
 #-------------------------------------------------------------------------------
 #Starting on workstations
 orig_dir <- "/home/user/2026_albacore"
@@ -493,8 +494,21 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
 
 ctllist$Use_2D_AR1_selectivity <- 0
 
-###Change things here
+
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+
+#Tune Recdevs
+#NO HESSIAN
+todir_tuned <- "model/sens5b_2daroff_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = todir , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+# tmepmod <- SS_output(todir)
 
 
 
@@ -517,6 +531,16 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #Change control file manually, turn starter to 0
+
+todir_tuned <- "model/sens5c_noage_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = todir , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
 
 
 ###------5d. Not assuming that the US longline fishery in Area 2 and 4 has a descending 
@@ -599,13 +623,17 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 # ==========================================================================
 # 7. Initial conditions:
-#    a. Investigate other initial fleets – check what was done in 2023.
+#7a. Investigate other initial fleets – check what was done in 2023.
+#Easiest to change manually
 
 # ==========================================================================
 # 8. Model Structure:
 #    a. Same model structure as in 2023 stock assessment; and
-#    b. Use 2023 model structure with updated data.
 
+#Easiest to change manually
+
+#    b. Use 2023 model structure with updated data.
+#Easiest to change manually
 #-------------------------------------------------------------------------------
 
 
