@@ -263,18 +263,59 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 # ==========================================================================
 # 4. Size composition weighting: (run on a different workstation)
 #    a. Down weighting each individual fleet; and
-todir <- "model/sens2a_h85/"
+todir <- "model/sens4a_fleetdown/"
 dir.create(todir)
 
-copy_files(fromdir = fromdir , todir = todir,
-           overwrite = T, files = list.files(fromdir))
-start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
-start$ctlfile <- "control_modified.ss"
-SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
-datlist <- SS_readdat(paste0(todir, "data.ss"))
-ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
-ctllist$SR_parms[2, "INIT"] <- .85
-SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+flz <- c("control.ss", "forecast.ss", "starter.ss", "data.ss",
+         "ss3.par")
+
+#---copy original files
+odir <- paste0(todir, "orig/")
+dir.create(odir)
+copy_files(fromdir = fromdir , todir = odir,
+           overwrite = T, files = flz)
+
+#---Find each fleet with varadjust
+origdat <- SS_readdat(paste0(odir, "data.ss"))
+origctl <- SS_readctl(datlist = origdat,
+                      file = paste0(odir, "control.ss"))
+
+fleets <- origctl$Variance_adjustment_list %>% filter(factor == 4) %>%
+  distinct(fleet) %>% pull(fleet)
+
+
+#----Create directories for each fleet
+ii <- 1
+newflz <- c("forecast.ss", "starter.ss", "data.ss", "ss3.par")
+
+ncores <- 11
+cl <- makeCluster(ncores)
+registerDoParallel(cl)
+
+start_time <- Sys.time()
+
+foreach(ii = 1:length(fleets), .packages = c("r4ss")) %dopar% {
+  newdir <- paste0(todir, "F", fleets[ii], "down/")    
+  dir.create(newdir)
+  copy_files(fromdir = fromdir , todir = newdir,
+             overwrite = T, files = newflz)
+  tempctl <- origctl
+  
+  tempind <- which(tempctl$Variance_adjustment_list$factor == 4 &
+          tempctl$Variance_adjustment_list$fleet == fleets[ii])
+  
+  tempctl$Variance_adjustment_list[tempind, "value"] <- .01
+  
+  SS_writectl(ctllist = tempctl, outfile = paste0(newdir, "control.ss"))
+  
+  setwd(newdir)
+  system('"../../../ss3.30.24_linux/ss3"')  
+  setwd(orig_dir)
+}
+
+stopCluster(cl)
+run_time <- Sys.time() - start_time; run_time
+
 
 #    b. Down weighting all fleets so the input sample size is maximum 50 (currently 150).
 
