@@ -506,6 +506,18 @@ SS_writectl(ctllist = newctl, outfile = paste0(todir, "control.ss"),
 # #Check gradients of some model runs
 # paste0(dir_prof, "Report", 1:length(R0.vec), ".sso")
 # 
+# 
+# rr <- list.files("model/base_model_2026_jitter_phase5R0")
+# grads <- data.frame(R0 = rr, grad = 999, nll = 999)
+# 
+# for(jj in 1:length(rr)){
+#   temp <- readLines(paste0("model/base_model_2026_jitter_phase5R0/", rr[jj], "/Report.sso"), n = 20  )
+#   grads[jj, 'grad'] <- as.numeric(strsplit(temp[15] , split = " ")[[1]][2])
+#   grads[jj, 'nll'] <- as.numeric(strsplit(temp[19] , split = " ")[[1]][2])
+# }
+
+
+
 # grads <- data.frame(R0 = R0.vec, grad = 999, nll = 999)
 # 
 # for(ii in 1:length(R0.vec)){
