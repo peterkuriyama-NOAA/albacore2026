@@ -181,6 +181,19 @@ ctl1$first_recent_yr_nobias_adj <- bb$df[4, 'value']
 ctl1$max_bias_adj <- bb$df[5, 'value']
 SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
 
+#-------------------
+#tune recdevs
+todir <- "model/sens2a_h75/"
+todir_tuned <- "model/sens2a_h75tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = "model/sens2a_h75/" , todir = todir_tuned,
+           overwrite = F, files = c("control_modified.ss", flz))
+
+newctl <- do_biasadj(tempdir = todir, ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
 
 ##---------steepness = 0.80
 todir <- "model/sens2a_h80/"
@@ -213,6 +226,19 @@ ctl1$max_bias_adj <- bb$df[5, 'value']
 SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
 
 
+#-------------------
+#tune recdevs
+# todir <- "model/sens2a_h80/"
+todir_tuned <- "model/sens2a_h80_tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = "model/sens2a_h80/" , todir = todir_tuned,
+           overwrite = F, files = c("control_modified.ss", flz))
+
+newctl <- do_biasadj(tempdir = "model/sens2a_h80/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
+
 ##---------steepness = 0.85
 todir <- "model/sens2a_h85/"
 dir.create(todir)
@@ -240,6 +266,19 @@ ctl1$last_yr_fullbias_adj <- bb$df[3, 'value']
 ctl1$first_recent_yr_nobias_adj <- bb$df[4, 'value']
 ctl1$max_bias_adj <- bb$df[5, 'value']
 SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
+
+#-------------------
+#tune recdevs
+# todir <- "model/sens2a_h80/"
+todir_tuned <- "model/sens2a_h85_tuned/"
+dir.create(todir_tuned)
+
+copy_files(fromdir = "model/sens2a_h85/" , todir = todir_tuned,
+           overwrite = F, files = c("control_modified.ss", flz))
+
+newctl <- do_biasadj(tempdir = "model/sens2a_h85/", ctlname = "control_modified.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
+
 
 ##--------- 2b. Adding prior based on Brodziak et al. (2011).
 #Estimate natural mortality with Lorenzen M
