@@ -346,11 +346,9 @@ tunedir <- "model/sens3a_cv6_tuned/"
 dir.create(tunedir)
 
 copy_files(fromdir = "model/sens3a_cv6/" , todir = tunedir,
-           overwrite = F, files = flz)
+           overwrite = T, files = flz)
 newctl <- do_biasadj(tempdir = "model/sens3a_cv6/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"))
-
-
 
 
 #----value of 0.08
@@ -381,18 +379,26 @@ SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite 
 #-----------    b. Estimating growth; turn on age comps for available data
 todir <- "model/sens3b_estgrowth/"
 dir.create(todir)
-
+flz <- c("control.ss_new", "forecast.ss", "starter.ss", "data.ss")
 copy_files(fromdir = fromdir , todir = todir,
            overwrite = T, files = flz)
 start <- SS_readstarter(file = paste0(todir, 'starter.ss'))
 start$ctlfile <- "control_modified.ss"
+start$init_values_src <- 0
 SS_writestarter(mylist = start, file = paste0(todir, "starter.ss"), overwrite = T)
 datlist <- SS_readdat(paste0(todir, "data.ss"))
 
 #Modify control file manually
 ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss_new"))
+ctllist$MG_parms[1:3, "PHASE"] <- c(6, 6, 6)
 
-SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
+#Turn on lambdas
+ageon <- datlist$agecomp %>% pull(fleet) %>% unique
+
+ctllist$lambdas[which(ctllist$lambdas$like_comp == 5 & 
+        ctllist$lambdas$fleet %in% ageon), "value"] <- 1
+
+SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
 #Turned on the three non CV growth parameters to positive phases in control file
 #TUrned on age lambdas for any fleet with CAAL data
 
