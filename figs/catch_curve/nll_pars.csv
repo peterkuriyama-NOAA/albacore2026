@@ -1,0 +1,13 @@
+"Label","variable","value","minval","delta"
+"Length_comp","base",1212.18,1210.12,2.06
+"Length_comp","catchcurve",1210.12,1210.12,0
+"Survey","base",-26.134,-26.134,0
+"Survey","catchcurve",0,-26.134,26.134
+"TOTAL","base",1646.18,1646.18,0
+"TOTAL","catchcurve",1668.98,1646.18,22.8
+"InitF_seas_1_flt_26F26_TWLL_A35","base",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","catchcurve",1.434,NA,NA
+"SR_LN(R0)","base",12.12,NA,NA
+"SR_LN(R0)","catchcurve",12.182,NA,NA
+"SR_regime_BLK1add_1993","base",0.043,NA,NA
+"SR_regime_BLK1add_1993","catchcurve",-0.046,NA,NA

@@ -442,11 +442,36 @@ SS_writectl(ctllist = newctl, outfile = paste0(todir, "control.ss"),
 
 
 
+####Fishery impacts---------------------
+##Turn off LL data
+catch <- pull_catch(list(base = basemod, b1 = basemod))
+fleetkey <- make_fleetkey(catch)
+
+longline_fleets <- fleetkey %>% filter(type == "base") %>% slice(grep("LL", fishery)) %>% distinct(fleetnum) %>% 
+  pull(fleetnum)
+
+#-----
+olddat <- SS_readdat("model/base_model_2026/data_echo.ss_new")
+no_longline_dat <- olddat
+
+no_longline_dat$catch[which(no_longline_dat$catch$fleet %in% longline_fleets & 
+        no_longline_dat$catch$year > 0), 'catch'] <- 0
 
 
+no_surface_dat <- olddat
+no_surface_dat$catch[which(no_surface_dat$catch$fleet %in% longline_fleets  == F & 
+                             no_surface_dat$catch$year > 0), 'catch'] <- 0
+
+no_surface_dat$catch %>% filter(fleet == 19)
+
+SS_writedat(datlist = no_longline_dat, outfile = "model/base_model_2026_noLL/data.ss",
+            overwrite = T)
+
+SS_writedat(datlist = no_surface_dat, outfile = "model/base_model_2026_nosurface/data.ss",
+            overwrite = T)
 
 
-
+##Turn off surface data data
 
 
 
@@ -699,3 +724,4 @@ SS_writectl(ctllist = newctl, outfile = paste0(todir, "control.ss"),
 # 
 # write.csv(cpues, file = "../albacore2026/output/hindcast_F10.csv", row.names = F)
 # 
+
