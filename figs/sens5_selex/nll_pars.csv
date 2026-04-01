@@ -1,0 +1,25 @@
+"Label","variable","value","minval","delta"
+"Length_comp","sigma_down.25",1212.18,1212.18,0
+"Length_comp","sigma_up.25",1212.18,1212.18,0
+"Length_comp","lensel only",1574.93,1212.18,362.75
+"Length_comp","base2026",1212.18,1212.18,0
+"Survey","sigma_down.25",-26.134,-26.134,0
+"Survey","sigma_up.25",-26.134,-26.134,0
+"Survey","lensel only",-25.723,-26.134,0.411
+"Survey","base2026",-26.134,-26.134,0
+"TOTAL","sigma_down.25",1646.15,1542.51,103.64
+"TOTAL","sigma_up.25",1646.15,1542.51,103.64
+"TOTAL","lensel only",1542.51,1542.51,0
+"TOTAL","base2026",1646.18,1542.51,103.67
+"InitF_seas_1_flt_26F26_TWLL_A35","sigma_down.25",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","sigma_up.25",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","lensel only",1.261,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
+"SR_LN(R0)","sigma_down.25",12.12,NA,NA
+"SR_LN(R0)","sigma_up.25",12.12,NA,NA
+"SR_LN(R0)","lensel only",12.068,NA,NA
+"SR_LN(R0)","base2026",12.12,NA,NA
+"SR_regime_BLK1add_1993","sigma_down.25",0.043,NA,NA
+"SR_regime_BLK1add_1993","sigma_up.25",0.043,NA,NA
+"SR_regime_BLK1add_1993","lensel only",0.063,NA,NA
+"SR_regime_BLK1add_1993","base2026",0.043,NA,NA

@@ -1,0 +1,25 @@
+"Label","variable","value","minval","delta"
+"Length_comp","S36 only",1210.31,1210.31,0
+"Length_comp","F10 and S37",1214.37,1210.31,4.06
+"Length_comp","F10 and S34",1219.97,1210.31,9.66
+"Length_comp","base2026",1212.18,1210.31,1.87
+"Survey","S36 only",-33.149,-43.46,10.31
+"Survey","F10 and S37",32.666,-43.46,76.126
+"Survey","F10 and S34",-43.46,-43.46,0
+"Survey","base2026",-26.134,-43.46,17.326
+"TOTAL","S36 only",1638,1634.25,3.75
+"TOTAL","F10 and S37",1708.38,1634.25,74.13
+"TOTAL","F10 and S34",1634.25,1634.25,0
+"TOTAL","base2026",1646.18,1634.25,11.93
+"InitF_seas_1_flt_26F26_TWLL_A35","S36 only",1.431,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","F10 and S37",1.348,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","F10 and S34",1.365,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
+"SR_LN(R0)","S36 only",12.034,NA,NA
+"SR_LN(R0)","F10 and S37",12.135,NA,NA
+"SR_LN(R0)","F10 and S34",12.076,NA,NA
+"SR_LN(R0)","base2026",12.12,NA,NA
+"SR_regime_BLK1add_1993","S36 only",0.065,NA,NA
+"SR_regime_BLK1add_1993","F10 and S37",0.034,NA,NA
+"SR_regime_BLK1add_1993","F10 and S34",0.061,NA,NA
+"SR_regime_BLK1add_1993","base2026",0.043,NA,NA

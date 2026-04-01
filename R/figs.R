@@ -306,8 +306,56 @@ ssbs %>% filter(Yr >= 1994) %>% ggplot(aes(x = Yr, y = value, group = fleet_name
 ggsave("Y:/My Drive/assessments/albacore2026/figs/ssbs_sizecompweighting.png", width = 8, height = 7)
 
 #5. Selectivity-------------------------------------------------------------------
+selruns <- list.files("model")[grep("sens5",list.files("model"))]
+selruns <- selruns[grep("tune", selruns)]
+selfold <- paste0("model/", c(selruns, "base_model_2026"))
+
+#TODOTODO
+selres <- ssoutput_parallel(ncores = 5, folders = selfold[-3])
+# names(selres) <- c('sigma_down.25', "sigma_up.25", "2dAR off", "lensel only",  "base2026")
+names(selres) <- c('sigma_down.25', "sigma_up.25",  "lensel only",  "base2026")
+
+
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens5_selex/"
+dir.create(figfolder)
+
+plot_sensitivity(selres, figfolder = figfolder)
+
+
 
 #6. Index standardization models---------------------------------------
+indexruns <- list.files("model")[grep("sens6",list.files("model"))]
+indexfolds <- paste0("model/", c("sens6a_S36_tuned", "sens6b_S37_tuned", "sens6c_S34_tuned"))
+
+indexres <- ssoutput_parallel(ncores = 5, folders = indexfolds)
+indexres[[4]] <- basemod
+names(indexres)[4] <- "base"
+names(indexres) <- c('S36 only', "F10 and S37",  "F10 and S34",  "base2026")
+
+
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens6_index/"
+dir.create(figfolder)
+
+plot_sensitivity(indexres, figfolder = figfolder)
+
+###ASPMs
+#S36_tuned
+aspm36 <- list.files("model")[grep("S36_tuned", list.files("model"))]
+aspm36 <- paste0("model/", aspm36, "/")
+
+aspm36res <- ssoutput_parallel(ncores = 3, folders = aspm36)
+names(aspm36res) <- c("base", "aspm", "aspmr")
+# res <- list(base = basemod, aspm = aspm, aspmr = aspmr)
+aspm36summs <- SSsummarize(aspm36res)
+
+aspm_figfold <- paste0(figfold, "")
+dir.create(aspm_figfold)  
+compare_aspm(figfold = aspm_figfold, 
+             aspm_res = res)
+
+
+
+
 #7. Initial conditions---------------------------------------
 
 
