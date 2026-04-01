@@ -254,27 +254,28 @@ ctllist$SR_parms[2, "INIT"] <- .85
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 #Adjust recdevs
-sens2a85 <- SS_output("model/sens2a_h85/")
-
-bb <- SS_fitbiasramp(sens2a85, plot = F)
-dat1 <- SS_readdat(paste0(todir, "data.ss"))
-ctl1 <- SS_readctl(datlist = datlist, file = paste0(todir, "control_modified.ss"))
-
-ctl1$last_early_yr_nobias_adj <- bb$df[1, 'value']
-ctl1$first_yr_fullbias_adj <- bb$df[2, 'value']
-ctl1$last_yr_fullbias_adj <- bb$df[3, 'value']
-ctl1$first_recent_yr_nobias_adj <- bb$df[4, 'value']
-ctl1$max_bias_adj <- bb$df[5, 'value']
-SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
+# sens2a85 <- SS_output("model/sens2a_h85/")
+# 
+# bb <- SS_fitbiasramp(sens2a85, plot = F)
+# dat1 <- SS_readdat(paste0(todir, "data.ss"))
+# ctl1 <- SS_readctl(datlist = datlist, file = paste0(todir, "control_modified.ss"))
+# 
+# ctl1$last_early_yr_nobias_adj <- bb$df[1, 'value']
+# ctl1$first_yr_fullbias_adj <- bb$df[2, 'value']
+# ctl1$last_yr_fullbias_adj <- bb$df[3, 'value']
+# ctl1$first_recent_yr_nobias_adj <- bb$df[4, 'value']
+# ctl1$max_bias_adj <- bb$df[5, 'value']
+# SS_writectl(ctllist = ctl1, outfile = paste0(todir, "control_modified.ss"), overwrite = T)
 
 #-------------------
 #tune recdevs
 # todir <- "model/sens2a_h80/"
-todir_tuned <- "model/sens2a_h85_tuned/"
+todir_tuned <- "model/sens2a_h85_tuned_v2/"
 dir.create(todir_tuned)
 
 copy_files(fromdir = "model/sens2a_h85/" , todir = todir_tuned,
-           overwrite = F, files = c("control_modified.ss", flz))
+           overwrite = F, files = c("control_modified.ss", "forecast.ss", "ss3.par", 
+                                    "starter.ss", "data.ss"))
 
 newctl <- do_biasadj(tempdir = "model/sens2a_h85/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
@@ -368,11 +369,12 @@ ctllist$MG_parms[prow, "INIT"] <- .08
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 #Tune recdevs
-tunedir <- "model/sens3a_cv8_tuned/"
+tunedir <- "model/sens3a_cv8_tuned_v2/"
 dir.create(tunedir)
 
 copy_files(fromdir = "model/sens3a_cv8/" , todir = tunedir,
-           overwrite = F, files = flz)
+           overwrite = F, files = c("control_modified.ss", "forecast.ss", "ss3.par", 
+                                    "starter.ss", "data.ss"))
 newctl <- do_biasadj(tempdir = "model/sens3a_cv8/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
@@ -403,11 +405,12 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"), o
 #TUrned on age lambdas for any fleet with CAAL data
 
 #Tune recdevs
-tunedir <- "model/sens3b_estgrowth_tuned/"
+tunedir <- "model/sens3b_estgrowth_tuned_v2/"
 dir.create(tunedir)
-c(flz, "control_modified.ss")
+
 copy_files(fromdir = "model/sens3b_estgrowth/" , todir = tunedir,
-           overwrite = F, files = c(flz, "control_modified.ss"))
+           overwrite = F, files = c("control_modified.ss", "forecast.ss", "ss3.par", 
+                                    "starter.ss", "data.ss"))
 newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
