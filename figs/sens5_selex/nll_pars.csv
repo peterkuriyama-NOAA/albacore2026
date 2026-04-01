@@ -1,25 +1,31 @@
 "Label","variable","value","minval","delta"
-"Length_comp","sigma_down.25",1212.18,1212.18,0
-"Length_comp","sigma_up.25",1212.18,1212.18,0
-"Length_comp","lensel only",1574.93,1212.18,362.75
-"Length_comp","base2026",1212.18,1212.18,0
-"Survey","sigma_down.25",-26.134,-26.134,0
-"Survey","sigma_up.25",-26.134,-26.134,0
-"Survey","lensel only",-25.723,-26.134,0.411
-"Survey","base2026",-26.134,-26.134,0
-"TOTAL","sigma_down.25",1646.15,1542.51,103.64
-"TOTAL","sigma_up.25",1646.15,1542.51,103.64
-"TOTAL","lensel only",1542.51,1542.51,0
-"TOTAL","base2026",1646.18,1542.51,103.67
-"InitF_seas_1_flt_26F26_TWLL_A35","sigma_down.25",1.329,NA,NA
-"InitF_seas_1_flt_26F26_TWLL_A35","sigma_up.25",1.329,NA,NA
-"InitF_seas_1_flt_26F26_TWLL_A35","lensel only",1.261,NA,NA
+"Length_comp","sigma_down.25",1344.41,1147.24,197.17
+"Length_comp","sigma_up.25",1147.24,1147.24,0
+"Length_comp","2dAR off",1505.35,1147.24,358.11
+"Length_comp","No age sel",1575.23,1147.24,427.99
+"Length_comp","base2026",1212.18,1147.24,64.94
+"Survey","sigma_down.25",-25.298,-26.337,1.039
+"Survey","sigma_up.25",-26.337,-26.337,0
+"Survey","2dAR off",-25.529,-26.337,0.808
+"Survey","No age sel",-25.792,-26.337,0.546
+"Survey","base2026",-26.134,-26.337,0.204
+"TOTAL","sigma_down.25",1572.73,1475.67,97.06
+"TOTAL","sigma_up.25",1703.65,1475.67,227.98
+"TOTAL","2dAR off",1475.67,1475.67,0
+"TOTAL","No age sel",1543.44,1475.67,67.77
+"TOTAL","base2026",1646.18,1475.67,170.51
+"InitF_seas_1_flt_26F26_TWLL_A35","sigma_down.25",1.343,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","sigma_up.25",1.299,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","2dAR off",1.417,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","No age sel",1.207,NA,NA
 "InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
-"SR_LN(R0)","sigma_down.25",12.12,NA,NA
-"SR_LN(R0)","sigma_up.25",12.12,NA,NA
-"SR_LN(R0)","lensel only",12.068,NA,NA
+"SR_LN(R0)","sigma_down.25",12.1,NA,NA
+"SR_LN(R0)","sigma_up.25",12.136,NA,NA
+"SR_LN(R0)","2dAR off",12.048,NA,NA
+"SR_LN(R0)","No age sel",12.079,NA,NA
 "SR_LN(R0)","base2026",12.12,NA,NA
-"SR_regime_BLK1add_1993","sigma_down.25",0.043,NA,NA
-"SR_regime_BLK1add_1993","sigma_up.25",0.043,NA,NA
-"SR_regime_BLK1add_1993","lensel only",0.063,NA,NA
+"SR_regime_BLK1add_1993","sigma_down.25",0.028,NA,NA
+"SR_regime_BLK1add_1993","sigma_up.25",0.051,NA,NA
+"SR_regime_BLK1add_1993","2dAR off",0.006,NA,NA
+"SR_regime_BLK1add_1993","No age sel",0.057,NA,NA
 "SR_regime_BLK1add_1993","base2026",0.043,NA,NA

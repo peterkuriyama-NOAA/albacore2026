@@ -117,6 +117,7 @@ deps$dep_hi5 <- deps$SSB / deps$hi5
 deps$dep_lo40 <- deps$SSB / deps$lo40
 deps$dep_hi40 <- deps$SSB / deps$hi40
 
+write.csv(deps, file = "Y:/My Drive/assessments/albacore2026/figs/basemodel/depletion.csv", row.names = F)
 
 m1 <-deps %>% ggplot(aes(x = Yr, y = dep)) + 
   theme_sleek()  + scale_y_continuous(lim = c(0, NA)) + 
@@ -153,6 +154,10 @@ sprs$year <- strsplit(sprs$Label, split = "_") %>% ldply() %>% pull(V2)
 sprs$year <- as.numeric(sprs$year)
 sprs$lo <- qnorm(.025,mean =  sprs$Value, sd = sprs$StdDev)
 sprs$hi <- qnorm(.975,mean =  sprs$Value, sd = sprs$StdDev)
+
+write.csv(sprs, file = "Y:/My Drive/assessments/albacore2026/figs/basemodel/spr.csv", row.names = F)
+sprs %>% filter(year %in% c(2023, 2022, 2021)) %>% pull(Value) %>% mean
+
 
 m2 <- sprs %>% ggplot(aes(x = year, y = Value)) + geom_line(aes(y = lo), lty = 2) + 
   geom_line(aes(y = hi), lty = 2) + geom_point() + geom_line() + 

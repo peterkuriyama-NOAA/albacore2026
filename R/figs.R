@@ -213,16 +213,15 @@ list.files('model')[grep("sens", list.files('model'))]
 
 
 ##3. Growth---------------------------------------
-gfold <- list.files('model')[grep("sens3", list.files('model'))]
-gfold <- gfold[grep("tuned", gfold)]
 
-gfold <- c(gfold, "base_model_2026")
-
+gfold <- c("sens3a_cv8_tuned_v2",
+  "sens3b_estgrowth_tuned_v2", "base_model_2026")
+gfold <- paste0("model/", gfold)
 
 gres <- ssoutput_parallel(ncores = length(gfold), 
-                          folders = paste0("model/", gfold))
+                          folders = gfold)
 
-names(gres) <- c('cvold=.06', "cvold=.08", "growth est", "base2026")
+names(gres) <- c("cvold=.08", "growth est", "base2026")
 
 figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens3_growth/"
 dir.create(figfolder)
@@ -304,14 +303,15 @@ ssbs %>% filter(Yr >= 1994) %>% ggplot(aes(x = Yr, y = value, group = fleet_name
 ggsave("Y:/My Drive/assessments/albacore2026/figs/ssbs_sizecompweighting.png", width = 8, height = 7)
 
 #5. Selectivity-------------------------------------------------------------------
-selruns <- list.files("model")[grep("sens5",list.files("model"))]
-selruns <- selruns[grep("tune", selruns)]
-selfold <- paste0("model/", c(selruns, "base_model_2026"))
+# selruns <- list.files("model")[grep("sens5",list.files("model"))]
+# selruns <- selruns[grep("tune", selruns)]
 
-#TODOTODO
-selres <- ssoutput_parallel(ncores = 5, folders = selfold[-3])
-# names(selres) <- c('sigma_down.25', "sigma_up.25", "2dAR off", "lensel only",  "base2026")
-names(selres) <- c('sigma_down.25', "sigma_up.25",  "lensel only",  "base2026")
+selruns <- c("sens5a_down", "sens5a_up","sens5b_2daroff", "sens5c_noage",  "base_model_2026")
+
+selfold <- paste0("model/", c(selruns))
+
+selres <- ssoutput_parallel(ncores = 5, folders = selfold)
+names(selres) <- c('sigma_down.25', "sigma_up.25","2dAR off"  ,"No age sel","base2026")
 
 
 figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens5_selex/"
@@ -337,7 +337,7 @@ dir.create(figfolder)
 plot_sensitivity(indexres, figfolder = figfolder)
 
 ###ASPMs
-#S36_tuned
+#S36_tuned----------------
 aspm36 <- list.files("model")[grep("S36_tuned", list.files("model"))]
 aspm36 <- paste0("model/", aspm36, "/")
 
@@ -346,17 +346,58 @@ names(aspm36res) <- c("base", "aspm", "aspmr")
 # res <- list(base = basemod, aspm = aspm, aspmr = aspmr)
 aspm36summs <- SSsummarize(aspm36res)
 
-aspm_figfold <- paste0(figfold, "")
+aspm_figfold <- "Y:/My Drive/assessments/albacore2026/figs/S36_ASPM/"
+
 dir.create(aspm_figfold)  
 compare_aspm(figfold = aspm_figfold, 
-             aspm_res = res)
+             aspm_res = aspm36res)
 
+
+#S37_tuned----------------
+aspm37 <- list.files("model")[grep("S37_tuned", list.files("model"))]
+aspm37 <- paste0("model/", aspm37, "/")
+
+aspm37res <- ssoutput_parallel(ncores = 3, folders = aspm37)
+names(aspm37res) <- c("base", "aspm", "aspmr")
+# res <- list(base = basemod, aspm = aspm, aspmr = aspmr)
+aspm37summs <- SSsummarize(aspm37res)
+
+aspm_figfold <- "Y:/My Drive/assessments/albacore2026/figs/S37_ASPM/"
+
+dir.create(aspm_figfold)  
+compare_aspm(figfold = aspm_figfold, 
+             aspm_res = aspm37res)
+
+#S34_tuned--------------------------
+aspm34 <- list.files("model")[grep("S34_tuned", list.files("model"))]
+aspm34 <- paste0("model/", aspm34, "/")
+
+aspm34res <- ssoutput_parallel(ncores = 3, folders = aspm34)
+names(aspm34res) <- c("base", "aspm", "aspmr")
+# res <- list(base = basemod, aspm = aspm, aspmr = aspmr)
+aspm34summs <- SSsummarize(aspm34res)
+
+aspm_figfold <- "Y:/My Drive/assessments/albacore2026/figs/S34_ASPM/"
+
+dir.create(aspm_figfold)  
+compare_aspm(figfold = aspm_figfold, 
+             aspm_res = aspm34res)
 
 
 
 #7. Initial conditions---------------------------------------
+init_folds <- list.files("model")[grep("sens7", list.files("model"))]
+init_folds <- paste0("model/", c(init_folds[grep("tuned", init_folds)], "base_model_2026"))
+init_res <- ssoutput_parallel(ncores = 5, folders = init_folds)
 
+names(init_res) <- c('TWLLA35_EPOSF', "JPPLA35_JPLLA13",  "JPPLA35_TWLLA35",  "JPLLA35_USLLA24",
+                     "base")
 
-# 8. Model Structure:
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens7_initF/"
+dir.create(figfolder)
+
+plot_sensitivity(init_res, figfolder = figfolder)
+
+# 8. Model Structure---------------------------------------
 
 

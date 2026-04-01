@@ -1,25 +1,19 @@
 "Label","variable","value","minval","delta"
-"Length_comp","cvold=.06",1212.18,1189.86,22.32
-"Length_comp","cvold=.08",1212.18,1189.86,22.32
-"Length_comp","growth est",1189.86,1189.86,0
-"Length_comp","base2026",1212.18,1189.86,22.32
-"Survey","cvold=.06",-26.134,-26.134,0
-"Survey","cvold=.08",-26.134,-26.134,0
-"Survey","growth est",-24.895,-26.134,1.239
+"Length_comp","cvold=.08",1224.53,1212.18,12.35
+"Length_comp","growth est",1221.08,1212.18,8.9
+"Length_comp","base2026",1212.18,1212.18,0
+"Survey","cvold=.08",-23.229,-26.134,2.905
+"Survey","growth est",-25.346,-26.134,0.787
 "Survey","base2026",-26.134,-26.134,0
-"TOTAL","cvold=.06",1646.15,1628.5,17.65
-"TOTAL","cvold=.08",1646.15,1628.5,17.65
-"TOTAL","growth est",1628.5,1628.5,0
-"TOTAL","base2026",1646.18,1628.5,17.68
-"InitF_seas_1_flt_26F26_TWLL_A35","cvold=.06",1.329,NA,NA
-"InitF_seas_1_flt_26F26_TWLL_A35","cvold=.08",1.329,NA,NA
-"InitF_seas_1_flt_26F26_TWLL_A35","growth est",0.783,NA,NA
+"TOTAL","cvold=.08",1659.08,1646.18,12.9
+"TOTAL","growth est",3163.22,1646.18,1517.04
+"TOTAL","base2026",1646.18,1646.18,0
+"InitF_seas_1_flt_26F26_TWLL_A35","cvold=.08",3.844,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","growth est",1.079,NA,NA
 "InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
-"SR_LN(R0)","cvold=.06",12.12,NA,NA
-"SR_LN(R0)","cvold=.08",12.12,NA,NA
-"SR_LN(R0)","growth est",16.414,NA,NA
+"SR_LN(R0)","cvold=.08",11.803,NA,NA
+"SR_LN(R0)","growth est",12.187,NA,NA
 "SR_LN(R0)","base2026",12.12,NA,NA
-"SR_regime_BLK1add_1993","cvold=.06",0.043,NA,NA
-"SR_regime_BLK1add_1993","cvold=.08",0.043,NA,NA
-"SR_regime_BLK1add_1993","growth est",0.221,NA,NA
+"SR_regime_BLK1add_1993","cvold=.08",-0.024,NA,NA
+"SR_regime_BLK1add_1993","growth est",0.041,NA,NA
 "SR_regime_BLK1add_1993","base2026",0.043,NA,NA
