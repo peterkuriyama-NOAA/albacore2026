@@ -196,8 +196,6 @@ hres <- ssoutput_parallel(ncores = length(hfold),
 
 hsumm <- SSsummarize(hres)
 
-
-
 names(hres) <- c('h=0.75', "h=0.80", "h=0.85", 'h est (no conv)', "base2026")
 
 figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens2_steep/"
