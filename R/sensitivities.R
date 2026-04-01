@@ -582,7 +582,7 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 #Tune Recdevs
 #NO HESSIAN
-todir_tuned <- "model/sens5b_2daroff_tuned/"
+todir_tuned <- "model/sens5b_2daroff_tuned_v2/"
 dir.create(todir_tuned)
 flz1 <- c(flz, "control_modified.ss")
 copy_files(fromdir = todir , todir = todir_tuned,
@@ -615,7 +615,7 @@ ctllist <- SS_readctl(datlist = datlist, file = paste0(todir, "control.ss"))
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #Change control file manually, turn starter to 0
 
-todir_tuned <- "model/sens5c_noage_tuned/"
+todir_tuned <- "model/sens5c_noage_tuned_v2/"
 dir.create(todir_tuned)
 flz1 <- c(flz, "control_modified.ss")
 copy_files(fromdir = todir , todir = todir_tuned,
