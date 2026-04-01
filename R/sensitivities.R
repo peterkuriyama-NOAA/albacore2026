@@ -360,9 +360,9 @@ SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 #Tune recdevs
 tunedir <- "model/sens3b_estgrowth_tuned/"
 dir.create(tunedir)
-
+c(flz, "control_modified.ss")
 copy_files(fromdir = "model/sens3b_estgrowth/" , todir = tunedir,
-           overwrite = F, files = flz)
+           overwrite = F, files = c(flz, "control_modified.ss"))
 newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
