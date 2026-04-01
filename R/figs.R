@@ -114,10 +114,63 @@ make_model_comparisons(res = res, figfolder = figfold, cpue_fleets = c(10, 36, 3
                        fleets_to_plot = c(1), alfleets = 1)
 
 
+
+##Fishery impact----------------------------------------------------------------------
+#rm(list=ls())
+
+# library(r4ss)
+library(colorRamps)
+
+startyr <- 2000
+endyr <- 2024
+outfile <- "Y:/My Drive/assessments/albacore2026/figs/fishery_impacts.png"
+
+outfile.TF <- T
+
+dirvec <- c("model/base_model_2026",
+            "model/base_model_2026_noLL", "model/base_model_2026_nocatch","model/base_model_2026_nosurface")
+SSreps <- ssoutput_parallel(ncores = length(dirvec), folders = dirvec)
+SSsummary <- SSsummarize(SSreps)
+
+yearvec <- seq(startyr,endyr)
+wantedrows <- (SSsummary$SpawnBio$Yr >= startyr)&(SSsummary$SpawnBio$Yr <= endyr)
+
+SSB.nocatch <- SSsummary$SpawnBio[wantedrows,3]
+SSB.noSF <- SSsummary$SpawnBio[wantedrows,4]
+SSB.noLL <- SSsummary$SpawnBio[wantedrows,2]
+SSB.allcatch <- SSsummary$SpawnBio[wantedrows,1]
+
+
+impact.LL <- SSB.nocatch - SSB.noSF 
+impact.SF <- SSB.nocatch - SSB.noLL
+
+pct.LL.1 <- 100*(impact.LL/SSB.nocatch)
+pct.SF.1 <- 100*(impact.SF/SSB.nocatch)
+pct.all.1 <- 100 - pct.LL.1 - pct.SF.1
+matrix.1 <- cbind(pct.all.1,pct.LL.1,pct.SF.1)
+
+
+pct.LL.2 <- 100*(impact.LL/(impact.SF+impact.LL))
+pct.SF.2 <- 100*(impact.SF/(impact.SF+impact.LL))
+
+
+if (outfile.TF) {
+  png(outfile)
+}
+
+stackpoly(x=yearvec,y=matrix.1,ylab='Percentage of dynamic SSB0 (%)',col=rainbow(3),ylim=c(0,100))
+text(x=c(2003,2003,2003),y=c(85,57,20), labels=c('Surface','Longline','Current SSB'))
+
+if (outfile.TF) {
+  dev.off()
+}
+
+
 #-----------------------------------------------------------------
-##Sensitivities-----------------------------------------------------------------
+##Sensitivities
 #-----------------------------------------------------------------
-##------------------Natural mortalities
+
+##1.Natural mortalities---------------------------------------
 Mfolds <- c("model/sens1a_M3/", "model/sens1b_consM/",
   "model/sens1c_estM//")
 
@@ -133,13 +186,16 @@ plot_sensitivity(Mres1, figfolder = figfolder)
 
 
 
-##------------------Steepness TODO TODO
+##2.Steepness--------------------------------------- 
 hfold <- list.files('model')[grep("sens2a", list.files('model'))]
+hfold <- hfold[grep("tuned", hfold)]
+
 hfold <- c(hfold, "sens2b_hprior", "base_model_2026")
-
-
 hres <- ssoutput_parallel(ncores = length(hfold), 
                           folders = paste0("model/", hfold))
+
+hsumm <- SSsummarize(hres)
+
 
 
 names(hres) <- c('h=0.75', "h=0.80", "h=0.85", 'h est (no conv)', "base2026")
@@ -150,17 +206,15 @@ dir.create(figfolder)
 plot_sensitivity(hres, figfolder = figfolder)
 
 ##Plot without esth runs
-
 figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens2_steep_noesth/"
 dir.create(figfolder)
 
 plot_sensitivity(hres[-4], figfolder = figfolder)
-
-
-
 list.files('model')[grep("sens", list.files('model'))]
 
-##------------------Growth
+
+
+##3. Growth---------------------------------------
 gfold <- list.files('model')[grep("sens3", list.files('model'))]
 gfold <- gfold[grep("tuned", gfold)]
 
@@ -170,6 +224,93 @@ gfold <- c(gfold, "base_model_2026")
 gres <- ssoutput_parallel(ncores = length(gfold), 
                           folders = paste0("model/", gfold))
 
+names(gres) <- c('cvold=.06', "cvold=.08", "growth est", "base2026")
 
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens3_growth/"
+dir.create(figfolder)
+
+plot_sensitivity(gres, figfolder = figfolder)
+
+##4.Size composition Weighting ---------------------------------------
+scfold <- list.files('model')[grep("sens4", list.files('model'))]
+scfold1 <- list.files(paste0("model/",scfold[1]))
+
+
+sc1 <- paste0("model/", scfold[1],"/",scfold1[grep("F", scfold1)])
+sc2 <- paste0("model/", scfold[2])
+scfold <- c(sc1, sc2)
+
+# scres <- ssoutput_parallel(folders = scfold, ncores = 10)
+# save(scres, file = "output/scres.Rdata")
+
+#Compare likelihoods fit to index and comps and 
+#SSBs
+
+scres[[25]] <- basemod
+names(scres)[25] <- 'basemod'
+
+scres_summ <- SSsummarize(scres)
+
+totlikes <- scres_summ$likelihoods %>% melt(id.var = "Label")
+totlikes$variable <- as.character(totlikes$variable)
+
+vv <- data.frame(variable = unique(totlikes$variable))
+vv2 <- strsplit(vv$variable, split = "\\/") %>% lapply(FUN = function(xx) temp <- xx[length(xx)]) %>%
+  ldply %>% pull(V1)
+
+
+vv$modname <- vv2
+vv$modname1 <- vv$modname
+vv$modname1 <- gsub("F", "", vv$modname1)
+vv$modname1 <- gsub("down", "", vv$modname1)
+vv$modname1 <- as.numeric(vv$modname1)
+
+ff <- fleetkey %>% filter(type == "base") %>% select(fleetnum, fishery, area, fleet_name) %>% rename(modname1 = "fleetnum")
+vv <- vv %>% left_join(ff, by = "modname1") 
+
+vv[which(is.na(vv$fleet_name)), 'fleet_name'] <- vv[which(is.na(vv$fleet_name)), 'modname']
+
+totlikes <- totlikes %>% left_join(vv, by = 'variable')
+
+totlikes <- totlikes %>% group_by(Label) %>% mutate(minval = min(value), delta = value - minval)  %>% as.data.frame
+
+
+#-----Survey likelihoods
+mle_survey <- totlikes %>% filter(Label == "Survey", modname == "basemod") %>% pull(delta)
+totlikes %>% filter(Label == "Survey") %>% ggplot(aes(x = fleet_name, y = delta)) + 
+  geom_point() + theme_sleek() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + 
+  geom_hline(aes(yintercept  = mle_survey), lty = 2) + xlab("Model run") + ylab("Survey change in NLL")
+ggsave("Y:/My Drive/assessments/albacore2026/figs/totlikes_sizecompweighting.png", width = 8, height = 7)
+
+#Lengthc omp likelihoods
+mle_length <- totlikes %>% filter(Label == "Length_comp", modname == "basemod") %>% pull(delta)
+totlikes %>% filter(Label == "Length_comp") %>% ggplot(aes(x = fleet_name, y = delta)) + 
+  geom_point() + theme_sleek() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + 
+  geom_hline(aes(yintercept  = mle_length), lty = 2) + xlab("Model run") + 
+  ylab("Length comp change in NLL")
+
+ggsave("Y:/My Drive/assessments/albacore2026/figs/lengthcomplikes_sizecompweighting.png", width = 8, height = 7)
+##SSBs
+ssbs <- scres_summ$SpawnBio %>% melt(id.var = c("Label", "Yr"))
+
+ssbs <- ssbs %>% left_join(vv, by = 'variable')
+
+ssbs[which(is.na(ssbs$fishery)), "fishery"] <- ssbs[which(is.na(ssbs$fishery)), "fleet_name"]
+
+
+ssbs %>% filter(Yr >= 1994) %>% ggplot(aes(x = Yr, y = value, group = fleet_name, color = fleet_name)) + 
+  geom_line() + facet_wrap(~ fishery) + theme_sleek() +
+  theme(legend.position = "none") + scale_y_continuous(label = comma, lim = c(0, NA)) + 
+  ylab("SSB (mt)") + xlab("Year")
+
+ggsave("Y:/My Drive/assessments/albacore2026/figs/ssbs_sizecompweighting.png", width = 8, height = 7)
+
+#5. Selectivity-------------------------------------------------------------------
+
+#6. Index standardization models---------------------------------------
+#7. Initial conditions---------------------------------------
+
+
+# 8. Model Structure:
 
 

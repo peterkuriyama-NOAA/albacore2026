@@ -453,7 +453,6 @@ longline_fleets <- fleetkey %>% filter(type == "base") %>% slice(grep("LL", fish
 #-----
 olddat <- SS_readdat("model/base_model_2026/data_echo.ss_new")
 no_longline_dat <- olddat
-
 no_longline_dat$catch[which(no_longline_dat$catch$fleet %in% longline_fleets & 
         no_longline_dat$catch$year > 0), 'catch'] <- 0
 
@@ -462,7 +461,9 @@ no_surface_dat <- olddat
 no_surface_dat$catch[which(no_surface_dat$catch$fleet %in% longline_fleets  == F & 
                              no_surface_dat$catch$year > 0), 'catch'] <- 0
 
-no_surface_dat$catch %>% filter(fleet == 19)
+
+no_catch <- olddat
+no_catch$catch[which(no_catch$catch$year > 0), 'catch'] <- 0
 
 SS_writedat(datlist = no_longline_dat, outfile = "model/base_model_2026_noLL/data.ss",
             overwrite = T)
@@ -470,6 +471,8 @@ SS_writedat(datlist = no_longline_dat, outfile = "model/base_model_2026_noLL/dat
 SS_writedat(datlist = no_surface_dat, outfile = "model/base_model_2026_nosurface/data.ss",
             overwrite = T)
 
+SS_writedat(datlist = no_catch, outfile = "model/base_model_2026_nocatch/data.ss",
+            overwrite = T)
 
 ##Turn off surface data data
 
