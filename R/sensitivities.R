@@ -665,7 +665,9 @@ SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwr
 
 ##ASPM 
 make_aspm(fromdir = "model/sens6a_S36_tuned/", 
-          todir = "model/sens6a_S36_tuned_ASPM/")
+          todir = "model/sens6a_S36_tuned_ASPM/",
+          files = c("data.ss", "control.ss_new", "starter.ss", "ss3.par", 
+                    "forecast.ss"))
 
 ##ASPMR
 make_aspmr(fromdir = "model/sens6a_S36_tuned/", 
@@ -709,7 +711,9 @@ SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwr
 
 ##ASPM 
 make_aspm(fromdir = "model/sens6b_S37_tuned/", 
-          todir = "model/sens6b_S37_tuned_ASPM/")
+          todir = "model/sens6b_S37_tuned_ASPM/",
+          files = c("data.ss", "control.ss_new", "starter.ss", "ss3.par", 
+                    "forecast.ss"))
 
 ##ASPMR
 make_aspmr(fromdir = "model/sens6b_S37_tuned/", 
@@ -755,7 +759,8 @@ SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwr
 
 ##ASPM 
 make_aspm(fromdir = "model/sens6c_S34_tuned/", 
-          todir = "model/sens6c_S34_tuned_ASPM/")
+          todir = "model/sens6c_S34_tuned_ASPM/",
+          files = flz1)
 
 ##ASPMR
 make_aspmr(fromdir = "model/sens6c_S34_tuned/", 
