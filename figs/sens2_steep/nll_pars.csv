@@ -1,0 +1,31 @@
+"Label","variable","value","minval","delta"
+"Length_comp","h=0.75",1212.18,1187.89,24.29
+"Length_comp","h=0.80",1212.18,1187.89,24.29
+"Length_comp","h=0.85",1212.18,1187.89,24.29
+"Length_comp","h est (no conv)",1187.89,1187.89,0
+"Length_comp","base2026",1212.18,1187.89,24.29
+"Survey","h=0.75",-26.134,-26.134,0
+"Survey","h=0.80",-26.134,-26.134,0
+"Survey","h=0.85",-26.134,-26.134,0
+"Survey","h est (no conv)",-24.656,-26.134,1.478
+"Survey","base2026",-26.134,-26.134,0
+"TOTAL","h=0.75",1646.15,1625.29,20.86
+"TOTAL","h=0.80",1646.15,1625.29,20.86
+"TOTAL","h=0.85",1646.15,1625.29,20.86
+"TOTAL","h est (no conv)",1625.29,1625.29,0
+"TOTAL","base2026",1646.18,1625.29,20.89
+"InitF_seas_1_flt_26F26_TWLL_A35","h=0.75",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","h=0.80",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","h=0.85",1.329,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","h est (no conv)",0.492,NA,NA
+"InitF_seas_1_flt_26F26_TWLL_A35","base2026",1.329,NA,NA
+"SR_LN(R0)","h=0.75",12.12,NA,NA
+"SR_LN(R0)","h=0.80",12.12,NA,NA
+"SR_LN(R0)","h=0.85",12.12,NA,NA
+"SR_LN(R0)","h est (no conv)",19.822,NA,NA
+"SR_LN(R0)","base2026",12.12,NA,NA
+"SR_regime_BLK1add_1993","h=0.75",0.043,NA,NA
+"SR_regime_BLK1add_1993","h=0.80",0.043,NA,NA
+"SR_regime_BLK1add_1993","h=0.85",0.043,NA,NA
+"SR_regime_BLK1add_1993","h est (no conv)",0.287,NA,NA
+"SR_regime_BLK1add_1993","base2026",0.043,NA,NA

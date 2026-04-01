@@ -127,4 +127,62 @@ hindcasts %>% mutate(endyear = 2024, p)
 
 hindcasts %>% select(fleet, yr) %>% filter(npred == 1, retro == 1)
 
+#-----------------------------------------------------------------
+##Sensitivities-----------------------------------------------------------------
+#-----------------------------------------------------------------
+##------------------Natural mortalities
+Mfolds <- c("model/sens1a_M3/", "model/sens1b_consM/",
+  "model/sens1c_estM//")
+
+Mres <- ssoutput_parallel(ncores = 3, folders = Mfolds)
+Mres1 <- Mres
+Mres1[[4]] <- basemod
+names(Mres1) <- c('M=0.3', "M=consM_consF", "estM", "base2026")
+
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens1_M/"
+dir.create(figfolder)
+
+plot_sensitivity(Mres1, figfolder = figfolder)
+
+
+
+##------------------Steepness TODO TODO
+hfold <- list.files('model')[grep("sens2a", list.files('model'))]
+hfold <- c(hfold, "sens2b_hprior", "base_model_2026")
+
+
+hres <- ssoutput_parallel(ncores = length(hfold), 
+                          folders = paste0("model/", hfold))
+
+
+names(hres) <- c('h=0.75', "h=0.80", "h=0.85", 'h est (no conv)', "base2026")
+
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens2_steep/"
+dir.create(figfolder)
+
+plot_sensitivity(hres, figfolder = figfolder)
+
+##Plot without esth runs
+
+figfolder <- "Y:/My Drive/assessments/albacore2026/figs/sens2_steep_noesth/"
+dir.create(figfolder)
+
+plot_sensitivity(hres[-4], figfolder = figfolder)
+
+
+
+list.files('model')[grep("sens", list.files('model'))]
+
+##------------------Growth
+gfold <- list.files('model')[grep("sens3", list.files('model'))]
+gfold <- gfold[grep("tuned", gfold)]
+
+gfold <- c(gfold, "base_model_2026")
+
+
+gres <- ssoutput_parallel(ncores = length(gfold), 
+                          folders = paste0("model/", gfold))
+
+
+
 
