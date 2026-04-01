@@ -16,9 +16,10 @@ library(r4ss)
 # devtools::install_github("peterkuriyama/cpsassessment")
 library(cpsassessment)
 
-# devtools::install_github("peterkuriyama-NOAA/hmsassessment")
+devtools::install_github("peterkuriyama-NOAA/hmsassessment")
 library(hmsassessment)
 
+# detach("package:hmsassessment", unload=TRUE)
 #Add permissions to run ss command line if necessary
 # system(" chmod +x 'ss3.30.24_linux/ss3'  ")
 
@@ -617,6 +618,13 @@ copy_files(fromdir = "model/sens6a_S36/" , todir = todir_tuned,
 newctl <- do_biasadj(tempdir = "model/sens6a_S36/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
 
+##ASPM 
+make_aspm(fromdir = "model/sens6a_S36_tuned/", 
+          todir = "model/sens6a_S36_tuned_ASPM/")
+
+##ASPMR
+make_aspmr(fromdir = "model/sens6a_S36_tuned/", 
+          todir = "model/sens6a_S36_tuned_ASPMR/")
 
 ####------6b. TWNLL JUV S37 in addition to F10 include ASPM/ASPMR; and
 todir <- "model/sens6b_S37/"
@@ -654,6 +662,15 @@ newctl <- do_biasadj(tempdir = "model/sens6b_S37/", ctlname = "control_modified.
 SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
 
 
+##ASPM 
+make_aspm(fromdir = "model/sens6b_S37_tuned/", 
+          todir = "model/sens6b_S37_tuned_ASPM/")
+
+##ASPMR
+make_aspmr(fromdir = "model/sens6b_S37_tuned/", 
+           todir = "model/sens6b_S37_tuned_ASPMR/")
+
+
 
 
 ###------6c. GLM Juvenile: Area 3/5 & Quarter 3/4 (EPO) in addition to F10.
@@ -681,7 +698,6 @@ ctllist$lambdas %>% filter(like_comp == 1)
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 
-
 #Tune Rec Devs
 todir_tuned <- "model/sens6c_S34_tuned/"
 dir.create(todir_tuned)
@@ -692,11 +708,62 @@ copy_files(fromdir = "model/sens6c_S34/" , todir = todir_tuned,
 newctl <- do_biasadj(tempdir = "model/sens6c_S34/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(todir_tuned, "control_modified.ss"), overwrite = T)
 
+##ASPM 
+make_aspm(fromdir = "model/sens6c_S34_tuned/", 
+          todir = "model/sens6c_S34_tuned_ASPM/")
+
+##ASPMR
+make_aspmr(fromdir = "model/sens6c_S34_tuned/", 
+           todir = "model/sens6c_S34_tuned_ASPMR/")
 
 # ==========================================================================
 # 7. Initial conditions:
 #7a. Investigate other initial fleets – check what was done in 2023.
 #Easiest to change manually
+
+#---------------
+todir_tuned <- "model/sens7a_initF_TWA35_EPO_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens7a_initF_TWA35_EPO/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens7a_initF_TWA35_EPO/", ctlname = "control.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control.ss"), overwrite = T)
+
+#---------------
+todir_tuned <- "model/sens7b_initF_JPPLA35_JPLLA13_tuned/"
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens7b_initF_JPPLA35_JPLLA13/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens7b_initF_JPPLA35_JPLLA13/", ctlname = "control.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control.ss"), overwrite = T)
+
+#---------------
+todir_tuned <- "model/sens7c_initF_JPPLA35_TWLLA35_tuned/"
+
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens7c_initF_JPPLA35_TWLLA35/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens7c_initF_JPPLA35_TWLLA35/", ctlname = "control.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control.ss"), overwrite = T)
+
+
+#---------------
+todir_tuned <- "model/sens7d_initF_JPLLA35_USLLA24_tuned/"
+
+dir.create(todir_tuned)
+flz1 <- c(flz, "control_modified.ss")
+copy_files(fromdir = "model/sens7d_initF_JPLLA35_USLLA24/" , todir = todir_tuned,
+           overwrite = F, files = flz1)
+
+newctl <- do_biasadj(tempdir = "model/sens7d_initF_JPLLA35_USLLA24/", ctlname = "control.ss")
+SS_writectl(newctl, outfile = paste0(todir_tuned, "control.ss"), overwrite = T)
+
 
 # ==========================================================================
 # 8. Model Structure:
