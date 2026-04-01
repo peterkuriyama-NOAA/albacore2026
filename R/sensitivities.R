@@ -517,12 +517,12 @@ ctllist$pars_2D_AR$INIT <- ctllist$pars_2D_AR$INIT + .25
 SS_writectl(ctllist = ctllist, outfile = paste0(todir, "control_modified.ss"))
 
 #---Tune Rec Devs
-tunedir <- "model/sens5a_up_tuned/"
+tunedir <- "model/sens5a_up_tuned_v2/"
 dir.create(tunedir)
 
 copy_files(fromdir = "model/sens5a_up/" , todir = tunedir,
-           overwrite = F, files = flz)
-newctl <- do_biasadj(tempdir = "model/sens3b_estgrowth/", ctlname = "control_modified.ss")
+           overwrite = F, files = c("control_modified.ss",flz))
+newctl <- do_biasadj(tempdir = "model/sens5a_up/", ctlname = "control_modified.ss")
 SS_writectl(newctl, outfile = paste0(tunedir, "control_modified.ss"), overwrite = T)
 
 
