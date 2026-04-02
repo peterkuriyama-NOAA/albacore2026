@@ -20,6 +20,7 @@ devtools::install_github("peterkuriyama-NOAA/hmsassessment")
 library(hmsassessment)
 
 # detach("package:hmsassessment", unload=TRUE)
+
 #Add permissions to run ss command line if necessary
 # system(" chmod +x 'ss3.30.24_linux/ss3'  ")
 
