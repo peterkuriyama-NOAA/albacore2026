@@ -3,6 +3,28 @@
 basemod
 
 
+fromdir <- "model/base_model_2026/"
+todir <- "model/tester/"
+run_from_par <- F
+
+par_to_change <- "CV_old" #SRoptionare steep; R0
+
+#input data frame that matches the parameters modification structure
+#columns are LO HI INIT PRIOR PR_SD PR_type PHASE
+
+parval_new <- data.frame(INIT = c(.08, .08), PHASE = c(-1, -1))
+
+
+
+
+#------start of function
+
+
+
+
+#Write the new files 
+
+
 # 
 # dquants <- lapply(res, FUN = function(xx) xx$derived_quants)
 # names(dquants) <- names(res)
