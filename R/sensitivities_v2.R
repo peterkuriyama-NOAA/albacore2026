@@ -198,6 +198,10 @@ change_initF(basedir = "model/base_model_2026",
              newdir = "model/sensitivities/initF_F1_F20/",
              initF_fleets = c(1, 20))
 
+
+SS_fitbiasramp(replist = SS_output("model/sensitivities/CVold6_tuned/"))
+
+
 initFres <- ssoutput_parallel(ncores = 5, folders = c("model/base_model_2026",
                     "model/sensitivities/initF_F26_F34/",
                     "model/sensitivities/initF_F20_F26/",
