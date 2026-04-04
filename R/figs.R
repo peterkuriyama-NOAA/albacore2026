@@ -26,8 +26,6 @@ basemod_folder <- "model/base_model_2026/"
 basemod <- SS_output(basemod_folder)
 
 
-
-
 figfold <- "Y:/My Drive//assessments//albacore2026/figs/"
 
 #Historical analysis------------------------------------------------------------
@@ -68,15 +66,30 @@ folds1 <- paste0(folds1, "/",f1val)
 folds2 <- paste0("model/base_model_2026_R0_profile_MLEout_vec2")
 f2val <- list.files(folds2)[grep("R0", list.files(folds2))]
 
-f2val <- f2val[-which(f2val == "R0_5_old")]
+f2val <- f2val[-which(f2val %in% c("R0_5_old"))]
 
 folds2 <- paste0(folds2, "/",f2val)
 
 folds <- c(folds1, folds2, basemod_folder)
 
+#check the R0s
+
 #----------------Read in results
 R0res <- ssoutput_parallel(ncores = 10, folders = folds) #Takes like 2.5 minutes
-R0summs <- SSsummarize(R0res)
+
+# R0resorig <- R0res
+# R0res <- R0resorig
+
+# R0res <- R0res[-16]
+
+
+names(R0res)
+R0summs <- SSsummarize(R0res[-17], verbose = F)
+
+R0summs$pars %>% slice(grep("R0", Label)) %>% melt(id.var = c("Label", "Yr", "recdev"))  %>% 
+  arrange(value)
+
+
 
 # comps <- PinerPlot(R0summs)
 
@@ -90,10 +103,10 @@ R0summs <- SSsummarize(R0res)
 # 
 # R0summs$likelihoods_by_fleet
 
-R0_figfold <- paste0(figfold, "R0profile_v2")
+R0_figfold <- paste0(figfold, "R0profile_v3")
 dir.create(R0_figfold)  
 
-make_R0profile_plots(figfold = R0_figfold, res = R0res)
+make_R0profile_plots(figfold = R0_figfold, res = R0res[-17])
 
 
 
