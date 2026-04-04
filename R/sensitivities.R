@@ -7,6 +7,11 @@
 orig_dir <- "/home/user/2026_albacore"
 setwd(orig_dir)
 
+library(ggridges)
+# library(doParallel)
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", 
+               "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
 source("Rcode/alb_header.R")
 
 #-------Add in assessment packages
